@@ -46,14 +46,6 @@
 | 의상 | [C# 학습자료](./해시/의상_CSharp_학습자료.md) |
 | 베스트앨범 | [C# 학습자료](./해시/베스트앨범_CSharp_학습자료.md) |
 
-추가 자료:
-
-- [Dictionary C#](./해시/dictionary-csharp.md)
-- [HashSet C#](./해시/hashset-csharp.md)
-- [오픈채팅방 C#](./해시/오픈채팅방-csharp.md)
-- [오픈채팅방 Python](./해시/오픈채팅방_python.md)
-- [베스트앨범 Python key 설명](./해시/best_album_python_key_explained.md)
-
 ### 스택/큐
 
 | 문제 | 자료 |
