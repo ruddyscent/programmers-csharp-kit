@@ -12,16 +12,16 @@
 
 | 유형 | 공식 문제 수 | 이 저장소 |
 | --- | ---: | --- |
-| 해시 | 5 | 완료 |
-| 스택/큐 | 6 | 완료 |
-| 힙(Heap) | 3 | 완료 |
-| 정렬 | 3 | 완료 |
-| 완전탐색 | 7 | 완료 |
-| 탐욕법(Greedy) | 6 | 완료 |
-| 동적계획법(Dynamic Programming) | 5 | 완료 |
-| 깊이/너비 우선 탐색(DFS/BFS) | 7 | 완료 |
-| 이분탐색 | 2 | 완료 |
-| 그래프 | 3 | 완료 |
+| [해시](https://school.programmers.co.kr/learn/courses/30/parts/12077) | 5 | 완료 |
+| [스택/큐](https://school.programmers.co.kr/learn/courses/30/parts/12078) | 6 | 완료 |
+| [힙(Heap)](https://school.programmers.co.kr/learn/courses/30/parts/12079) | 3 | 완료 |
+| [정렬](https://school.programmers.co.kr/learn/courses/30/parts/12080) | 3 | 완료 |
+| [완전탐색](https://school.programmers.co.kr/learn/courses/30/parts/12081) | 7 | 완료 |
+| [탐욕법(Greedy)](https://school.programmers.co.kr/learn/courses/30/parts/12082) | 6 | 완료 |
+| [동적계획법(Dynamic Programming)](https://school.programmers.co.kr/learn/courses/30/parts/12083) | 5 | 완료 |
+| [깊이/너비 우선 탐색(DFS/BFS)](https://school.programmers.co.kr/learn/courses/30/parts/12084) | 7 | 완료 |
+| [이분탐색](https://school.programmers.co.kr/learn/courses/30/parts/12085) | 2 | 완료 |
+| [그래프](https://school.programmers.co.kr/learn/courses/30/parts/12086) | 3 | 완료 |
 
 ## 저장소 구성
 
@@ -45,98 +45,98 @@
 
 | 문제 | 자료 |
 | --- | --- |
-| 완주하지 못한 선수 | [C# 학습자료](./해시/완주하지_못한_선수_CSharp_학습자료.md) |
-| 전화번호 목록 | [C# 학습자료](./해시/전화번호_목록_CSharp_학습자료.md) |
-| 폰켓몬 | [C# 학습자료](./해시/폰켓몬_CSharp_학습자료.md) |
-| 의상 | [C# 학습자료](./해시/의상_CSharp_학습자료.md) |
-| 베스트앨범 | [C# 학습자료](./해시/베스트앨범_CSharp_학습자료.md) |
+| [완주하지 못한 선수](https://school.programmers.co.kr/learn/courses/30/lessons/42576) | [C# 학습자료](./해시/완주하지_못한_선수_CSharp_학습자료.md) |
+| [전화번호 목록](https://school.programmers.co.kr/learn/courses/30/lessons/42577) | [C# 학습자료](./해시/전화번호_목록_CSharp_학습자료.md) |
+| [폰켓몬](https://school.programmers.co.kr/learn/courses/30/lessons/1845) | [C# 학습자료](./해시/폰켓몬_CSharp_학습자료.md) |
+| [의상](https://school.programmers.co.kr/learn/courses/30/lessons/42578) | [C# 학습자료](./해시/의상_CSharp_학습자료.md) |
+| [베스트앨범](https://school.programmers.co.kr/learn/courses/30/lessons/42579) | [C# 학습자료](./해시/베스트앨범_CSharp_학습자료.md) |
 
 ### 스택/큐
 
 | 문제 | 자료 |
 | --- | --- |
-| 같은 숫자는 싫어 | [C# 학습자료](./스택_큐/같은_숫자는_싫어_CSharp_학습자료.md) |
-| 기능개발 | [C# 학습자료](./스택_큐/기능개발_CSharp_학습자료.md) |
-| 올바른 괄호 | [C# 학습자료](./스택_큐/올바른_괄호_CSharp_학습자료.md) |
-| 프로세스 | [C# 학습자료](./스택_큐/프로세스_CSharp_학습자료_v2.md) |
-| 다리를 지나는 트럭 | [C# 학습자료](./스택_큐/다리를_지나는_트럭_CSharp_학습자료.md) |
-| 주식가격 | [C# 학습자료](./스택_큐/주식가격_CSharp_학습자료.md) |
+| [같은 숫자는 싫어](https://school.programmers.co.kr/learn/courses/30/lessons/12906) | [C# 학습자료](./스택_큐/같은_숫자는_싫어_CSharp_학습자료.md) |
+| [기능개발](https://school.programmers.co.kr/learn/courses/30/lessons/42586) | [C# 학습자료](./스택_큐/기능개발_CSharp_학습자료.md) |
+| [올바른 괄호](https://school.programmers.co.kr/learn/courses/30/lessons/12909) | [C# 학습자료](./스택_큐/올바른_괄호_CSharp_학습자료.md) |
+| [프로세스](https://school.programmers.co.kr/learn/courses/30/lessons/42587) | [C# 학습자료](./스택_큐/프로세스_CSharp_학습자료_v2.md) |
+| [다리를 지나는 트럭](https://school.programmers.co.kr/learn/courses/30/lessons/42583) | [C# 학습자료](./스택_큐/다리를_지나는_트럭_CSharp_학습자료.md) |
+| [주식가격](https://school.programmers.co.kr/learn/courses/30/lessons/42584) | [C# 학습자료](./스택_큐/주식가격_CSharp_학습자료.md) |
 
 ### 힙
 
 | 문제 | 자료 |
 | --- | --- |
-| 더 맵게 | [C# 학습자료](./힙/더_맵게_CSharp_학습자료.md) |
-| 디스크 컨트롤러 | [C# 학습자료](./힙/디스크_컨트롤러_CSharp_학습자료.md) |
-| 이중우선순위큐 | [C# 학습자료](./힙/이중우선순위큐_CSharp_학습자료.md) |
+| [더 맵게](https://school.programmers.co.kr/learn/courses/30/lessons/42626) | [C# 학습자료](./힙/더_맵게_CSharp_학습자료.md) |
+| [디스크 컨트롤러](https://school.programmers.co.kr/learn/courses/30/lessons/42627) | [C# 학습자료](./힙/디스크_컨트롤러_CSharp_학습자료.md) |
+| [이중우선순위큐](https://school.programmers.co.kr/learn/courses/30/lessons/42628) | [C# 학습자료](./힙/이중우선순위큐_CSharp_학습자료.md) |
 
 ### 정렬
 
 | 문제 | 자료 |
 | --- | --- |
-| K번째수 | [C# 학습자료](./정렬/K번째수_CSharp_학습자료.md) |
-| 가장 큰 수 | [C# 학습자료](./정렬/가장_큰_수_CSharp_학습자료.md) |
-| H-Index | [C# 학습자료](./정렬/H-Index_CSharp_학습자료.md) |
+| [K번째수](https://school.programmers.co.kr/learn/courses/30/lessons/42748) | [C# 학습자료](./정렬/K번째수_CSharp_학습자료.md) |
+| [가장 큰 수](https://school.programmers.co.kr/learn/courses/30/lessons/42746) | [C# 학습자료](./정렬/가장_큰_수_CSharp_학습자료.md) |
+| [H-Index](https://school.programmers.co.kr/learn/courses/30/lessons/42747) | [C# 학습자료](./정렬/H-Index_CSharp_학습자료.md) |
 
 ### 완전탐색
 
 | 문제 | 자료 |
 | --- | --- |
-| 최소직사각형 | [C# 학습자료](./완전탐색/최소직사각형_CSharp_학습자료.md) |
-| 모의고사 | [C# 학습자료](./완전탐색/모의고사_CSharp_학습자료.md) |
-| 소수 찾기 | [C# 학습자료](./완전탐색/소수_찾기_CSharp_학습자료.md) |
-| 카펫 | [C# 학습자료](./완전탐색/카펫_CSharp_학습자료.md) |
-| 피로도 | [C# 학습자료](./완전탐색/피로도_CSharp_학습자료.md) |
-| 전력망을 둘로 나누기 | [C# 학습자료](./완전탐색/전력망을_둘로_나누기_CSharp_학습자료.md) |
-| 모음 사전 | [C# 학습자료](./완전탐색/모음_사전_CSharp_학습자료.md) |
+| [최소직사각형](https://school.programmers.co.kr/learn/courses/30/lessons/86491) | [C# 학습자료](./완전탐색/최소직사각형_CSharp_학습자료.md) |
+| [모의고사](https://school.programmers.co.kr/learn/courses/30/lessons/42840) | [C# 학습자료](./완전탐색/모의고사_CSharp_학습자료.md) |
+| [소수 찾기](https://school.programmers.co.kr/learn/courses/30/lessons/12921) | [C# 학습자료](./완전탐색/소수_찾기_CSharp_학습자료.md) |
+| [카펫](https://school.programmers.co.kr/learn/courses/30/lessons/42842) | [C# 학습자료](./완전탐색/카펫_CSharp_학습자료.md) |
+| [피로도](https://school.programmers.co.kr/learn/courses/30/lessons/87946) | [C# 학습자료](./완전탐색/피로도_CSharp_학습자료.md) |
+| [전력망을 둘로 나누기](https://school.programmers.co.kr/learn/courses/30/lessons/86971) | [C# 학습자료](./완전탐색/전력망을_둘로_나누기_CSharp_학습자료.md) |
+| [모음 사전](https://school.programmers.co.kr/learn/courses/30/lessons/84512) | [C# 학습자료](./완전탐색/모음_사전_CSharp_학습자료.md) |
 
 ### 탐욕법
 
 | 문제 | 자료 |
 | --- | --- |
-| 체육복 | [C# 학습자료](./탐욕법/체육복_CSharp_학습자료.md) |
-| 조이스틱 | [C# 학습자료](./탐욕법/조이스틱_CSharp_학습자료.md) |
-| 큰 수 만들기 | [C# 학습자료](./탐욕법/큰_수_만들기_CSharp_학습자료.md) |
-| 구명보트 | [C# 학습자료](./탐욕법/구명보트_CSharp_학습자료.md) |
-| 섬 연결하기 | [C# 학습자료](./탐욕법/섬_연결하기_CSharp_학습자료.md) |
-| 단속카메라 | [C# 학습자료](./탐욕법/단속카메라_CSharp_학습자료.md) |
+| [체육복](https://school.programmers.co.kr/learn/courses/30/lessons/42862) | [C# 학습자료](./탐욕법/체육복_CSharp_학습자료.md) |
+| [조이스틱](https://school.programmers.co.kr/learn/courses/30/lessons/42860) | [C# 학습자료](./탐욕법/조이스틱_CSharp_학습자료.md) |
+| [큰 수 만들기](https://school.programmers.co.kr/learn/courses/30/lessons/42883) | [C# 학습자료](./탐욕법/큰_수_만들기_CSharp_학습자료.md) |
+| [구명보트](https://school.programmers.co.kr/learn/courses/30/lessons/42885) | [C# 학습자료](./탐욕법/구명보트_CSharp_학습자료.md) |
+| [섬 연결하기](https://school.programmers.co.kr/learn/courses/30/lessons/42861) | [C# 학습자료](./탐욕법/섬_연결하기_CSharp_학습자료.md) |
+| [단속카메라](https://school.programmers.co.kr/learn/courses/30/lessons/42884) | [C# 학습자료](./탐욕법/단속카메라_CSharp_학습자료.md) |
 
 ### 동적계획법
 
 | 문제 | 자료 |
 | --- | --- |
-| N으로 표현 | [C# 학습자료](./동적계획법/N으로_표현_CSharp_학습자료.md) |
-| 정수 삼각형 | [C# 학습자료](./동적계획법/정수_삼각형_CSharp_학습자료.md) |
-| 등굣길 | [C# 학습자료](./동적계획법/등굣길_CSharp_학습자료.md) |
-| 사칙연산 | [C# 학습자료](./동적계획법/사칙연산_CSharp_학습자료.md) |
-| 도둑질 | [C# 학습자료](./동적계획법/도둑질_CSharp_학습자료.md) |
+| [N으로 표현](https://school.programmers.co.kr/learn/courses/30/lessons/42895) | [C# 학습자료](./동적계획법/N으로_표현_CSharp_학습자료.md) |
+| [정수 삼각형](https://school.programmers.co.kr/learn/courses/30/lessons/43105) | [C# 학습자료](./동적계획법/정수_삼각형_CSharp_학습자료.md) |
+| [등굣길](https://school.programmers.co.kr/learn/courses/30/lessons/42898) | [C# 학습자료](./동적계획법/등굣길_CSharp_학습자료.md) |
+| [사칙연산](https://school.programmers.co.kr/learn/courses/30/lessons/42897) | [C# 학습자료](./동적계획법/사칙연산_CSharp_학습자료.md) |
+| [도둑질](https://school.programmers.co.kr/learn/courses/30/lessons/42897) | [C# 학습자료](./동적계획법/도둑질_CSharp_학습자료.md) |
 
 ### 깊이/너비 우선 탐색
 
 | 문제 | 자료 |
 | --- | --- |
-| 타겟 넘버 | [C# 학습자료](./깊이_너비_우선_탐색/타겟_넘버_CSharp_학습자료.md) |
-| 게임 맵 최단거리 | [C# 학습자료](./깊이_너비_우선_탐색/게임_맵_최단거리_CSharp_학습자료.md) |
-| 네트워크 | [C# 학습자료](./깊이_너비_우선_탐색/네트워크_CSharp_학습자료.md) |
-| 단어 변환 | [C# 학습자료](./깊이_너비_우선_탐색/단어_변환_CSharp_학습자료.md) |
-| 아이템 줍기 | [C# 학습자료](./깊이_너비_우선_탐색/아이템_줍기_CSharp_학습자료.md) |
-| 여행경로 | [C# 학습자료](./깊이_너비_우선_탐색/여행경로_CSharp_학습자료.md) |
-| 퍼즐 조각 채우기 | [C# 학습자료](./깊이_너비_우선_탐색/퍼즐_조각_채우기_CSharp_학습자료.md) |
+| [타겟 넘버](https://school.programmers.co.kr/learn/courses/30/lessons/43165) | [C# 학습자료](./깊이_너비_우선_탐색/타겟_넘버_CSharp_학습자료.md) |
+| [게임 맵 최단거리](https://school.programmers.co.kr/learn/courses/30/lessons/43163) | [C# 학습자료](./깊이_너비_우선_탐색/게임_맵_최단거리_CSharp_학습자료.md) |
+| [네트워크](https://school.programmers.co.kr/learn/courses/30/lessons/43162) | [C# 학습자료](./깊이_너비_우선_탐색/네트워크_CSharp_학습자료.md) |
+| [단어 변환](https://school.programmers.co.kr/learn/courses/30/lessons/43163) | [C# 학습자료](./깊이_너비_우선_탐색/단어_변환_CSharp_학습자료.md) |
+| [아이템 줍기](https://school.programmers.co.kr/learn/courses/30/lessons/43164) | [C# 학습자료](./깊이_너비_우선_탐색/아이템_줍기_CSharp_학습자료.md) |
+| [여행경로](https://school.programmers.co.kr/learn/courses/30/lessons/43164) | [C# 학습자료](./깊이_너비_우선_탐색/여행경로_CSharp_학습자료.md) |
+| [퍼즐 조각 채우기](https://school.programmers.co.kr/learn/courses/30/lessons/43164) | [C# 학습자료](./깊이_너비_우선_탐색/퍼즐_조각_채우기_CSharp_학습자료.md) |
 
 ### 이분탐색
 
 | 문제 | 자료 |
 | --- | --- |
-| 입국심사 | [C# 학습자료](./이분탐색/입국심사_CSharp_학습자료.md) |
-| 징검다리 | [C# 학습자료](./이분탐색/징검다리_CSharp_학습자료.md) |
+| [입국심사](https://school.programmers.co.kr/learn/courses/30/lessons/43238) | [C# 학습자료](./이분탐색/입국심사_CSharp_학습자료.md) |
+| [징검다리](https://school.programmers.co.kr/learn/courses/30/lessons/43236) | [C# 학습자료](./이분탐색/징검다리_CSharp_학습자료.md) |
 
 ### 그래프
 
 | 문제 | 자료 |
 | --- | --- |
-| 가장 먼 노드 | [C# 학습자료](./그래프/가장_먼_노드_CSharp_학습자료.md) |
-| 순위 | [C# 학습자료](./그래프/순위_CSharp_학습자료.md) |
-| 방의 개수 | [C# 학습자료](./그래프/방의_개수_CSharp_학습자료.md) |
+| [가장 먼 노드](https://school.programmers.co.kr/learn/courses/30/lessons/49189) | [C# 학습자료](./그래프/가장_먼_노드_CSharp_학습자료.md) |
+| [순위](https://school.programmers.co.kr/learn/courses/30/lessons/49189) | [C# 학습자료](./그래프/순위_CSharp_학습자료.md) |
+| [방의 개수](https://school.programmers.co.kr/learn/courses/30/lessons/49189) | [C# 학습자료](./그래프/방의_개수_CSharp_학습자료.md) |
 
 ## 자료 구성 방식
 
