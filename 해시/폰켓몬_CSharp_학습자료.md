@@ -221,21 +221,10 @@ public class Solution
 {
     public int solution(int[] nums)
     {
-        HashSet<int> kinds = new HashSet<int>();
-
-        foreach (int num in nums)
-        {
-            kinds.Add(num);
-        }
-
+        HashSet<int> kinds = new HashSet<int>(nums);
         int maxPick = nums.Length / 2;
 
-        if (kinds.Count > maxPick)
-        {
-            return maxPick;
-        }
-
-        return kinds.Count;
+        return Math.Min(kinds.Count, maxPick);
     }
 }
 ```
@@ -252,6 +241,8 @@ HashSet<int> kinds = new HashSet<int>();
 
 폰켓몬 종류 번호를 저장할 공간입니다.
 
+생성자에 `nums`를 바로 넣으면 모든 번호가 들어갑니다.
+
 HashSet은 같은 값을 여러 번 넣어도 한 번만 저장합니다.
 
 ```text
@@ -259,17 +250,6 @@ HashSet은 같은 값을 여러 번 넣어도 한 번만 저장합니다.
 ```
 
 ---
-
-### 2. 폰켓몬 종류 넣기
-
-```csharp
-foreach (int num in nums)
-{
-    kinds.Add(num);
-}
-```
-
-모든 폰켓몬 번호를 HashSet에 넣습니다.
 
 예를 들어:
 
@@ -287,7 +267,7 @@ foreach (int num in nums)
 
 ---
 
-### 3. 고를 수 있는 마릿수 계산
+### 2. 고를 수 있는 마릿수 계산
 
 ```csharp
 int maxPick = nums.Length / 2;
@@ -297,15 +277,10 @@ int maxPick = nums.Length / 2;
 
 ---
 
-### 4. 더 작은 값 반환
+### 3. 더 작은 값 반환
 
 ```csharp
-if (kinds.Count > maxPick)
-{
-    return maxPick;
-}
-
-return kinds.Count;
+return Math.Min(kinds.Count, maxPick);
 ```
 
 종류가 아무리 많아도 고를 수 있는 마릿수보다 많은 종류를 고를 수는 없습니다.
@@ -346,7 +321,7 @@ O(n)
 
 ---
 
-# 🚀 풀이 2. 코드가 짧은 방법 — LINQ의 Distinct 사용하기
+# 🚀 풀이 2. 짧은 코드 버전 — LINQ의 Distinct 사용하기
 
 ## 💡 아이디어
 
@@ -472,9 +447,9 @@ O(n)
 3. 해시 자료구조의 기본 사용법을 익힐 수 있습니다.
 ```
 
-프로그래머스 제출용으로는 **풀이 2번 LINQ 방식**도 좋습니다.
+코딩 테스트 제출용으로 코드 길이를 우선한다면 **풀이 2번 LINQ 방식**이 가장 짧습니다.
 
-다만 `using System.Linq;`를 빼먹으면 컴파일 에러가 납니다. ⚠️
+다만 `using System.Linq;`를 빼먹으면 컴파일 에러가 납니다. LINQ가 낯설다면 풀이 1번도 충분히 짧습니다. ⚠️
 
 ---
 

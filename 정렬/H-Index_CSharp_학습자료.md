@@ -208,33 +208,23 @@ h번 이상 인용된 논문이 h편 이상
 
 ```csharp
 using System;
-using System.Linq;
 
 public class Solution
 {
     public int solution(int[] citations)
     {
-        int[] sorted = citations
-            .OrderByDescending(x => x)
-            .ToArray();
+        Array.Sort(citations);
+        Array.Reverse(citations);
 
-        int answer = 0;
-
-        for (int i = 0; i < sorted.Length; i++)
+        for (int i = 0; i < citations.Length; i++)
         {
             int h = i + 1;
 
-            if (sorted[i] >= h)
-            {
-                answer = h;
-            }
-            else
-            {
-                break;
-            }
+            if (citations[i] < h)
+                return i;
         }
 
-        return answer;
+        return citations.Length;
     }
 }
 ```
@@ -246,9 +236,8 @@ public class Solution
 ### 1. 내림차순 정렬
 
 ```csharp
-int[] sorted = citations
-    .OrderByDescending(x => x)
-    .ToArray();
+Array.Sort(citations);
+Array.Reverse(citations);
 ```
 
 인용 수가 큰 논문부터 확인하기 위해 내림차순으로 정렬합니다.
@@ -290,33 +279,30 @@ i = 2 → h = 3
 ### 3. 조건 확인
 
 ```csharp
-if (sorted[i] >= h)
+if (citations[i] < h)
 ```
 
 내림차순으로 정렬했으므로 `i`번째 위치까지는 적어도 `h`편의 논문이 있습니다.
 
-`sorted[i] >= h`라면:
+`citations[i] < h`라면:
 
 ```text
-h번 이상 인용된 논문이 h편 이상 있다.
+h번 이상 인용된 논문이 h편 이상 있다는 조건이 깨진다.
 ```
 
-는 뜻입니다. ✅
+는 뜻입니다.
 
 ---
 
 ### 4. 조건이 깨지면 종료
 
 ```csharp
-else
-{
-    break;
-}
+return i;
 ```
 
 내림차순 정렬 상태에서 한 번 조건이 깨지면, 뒤쪽은 인용 수가 더 작습니다.
 
-따라서 더 볼 필요가 없습니다.
+따라서 바로 직전 값인 `i`가 정답입니다.
 
 ---
 
@@ -334,27 +320,27 @@ O(n log n)
 
 ## 📦 공간 복잡도
 
-LINQ 정렬 결과 배열을 새로 만듭니다.
+입력 배열을 직접 정렬합니다.
 
 ```text
-O(n)
+O(1)
 ```
 
 입니다.
 
 ---
 
-# 🚀 풀이 2. 코드가 짧은 방법 — LINQ로 간결하게 쓰기
+# 🚀 풀이 2. 짧은 코드 버전 — 오름차순 정렬로 바로 반환하기
 
 ## 💡 아이디어
 
-내림차순 정렬 후, 조건을 만족하는 위치의 개수를 세면 됩니다.
+오름차순 정렬 후, 현재 위치에서 남은 논문 수를 H-Index 후보로 봅니다.
 
 ```text
-정렬된 i번째 인용 수 >= i + 1
+남은 논문 수 = n - i
 ```
 
-을 만족하는 개수가 H-Index입니다.
+`citations[i] >= n - i`가 처음 성립하면 그 값이 정답입니다.
 
 ---
 
@@ -362,16 +348,20 @@ O(n)
 
 ```csharp
 using System;
-using System.Linq;
 
 public class Solution
 {
     public int solution(int[] citations)
     {
-        return citations
-            .OrderByDescending(x => x)
-            .Select((citation, index) => citation >= index + 1)
-            .Count(isValid => isValid);
+        Array.Sort(citations);
+
+        int n = citations.Length;
+
+        for (int i = 0; i < n; i++)
+            if (citations[i] >= n - i)
+                return n - i;
+
+        return 0;
     }
 }
 ```
@@ -380,61 +370,40 @@ public class Solution
 
 ## ✨ 코드 의미
 
-### 1. 내림차순 정렬
+### 1. 오름차순 정렬
 
 ```csharp
-.OrderByDescending(x => x)
+Array.Sort(citations);
 ```
 
-인용 수가 큰 순서대로 정렬합니다.
+인용 수가 작은 순서대로 정렬합니다.
 
 ---
 
-### 2. 각 위치가 H-Index 조건을 만족하는지 확인
+### 2. 남은 논문 수를 후보로 보기
 
 ```csharp
-.Select((citation, index) => citation >= index + 1)
+n - i
 ```
 
-예를 들어 정렬 결과가:
-
-```text
-[6, 5, 3, 1, 0]
-```
-
-이면:
-
-```text
-6 >= 1 → true
-5 >= 2 → true
-3 >= 3 → true
-1 >= 4 → false
-0 >= 5 → false
-```
-
-입니다.
+오름차순 정렬에서 `i`번째부터 끝까지 남은 논문 수입니다.
 
 ---
 
-### 3. true 개수 세기
+### 3. 조건이 맞으면 바로 반환
 
 ```csharp
-.Count(isValid => isValid)
+if (citations[i] >= n - i)
+    return n - i;
 ```
 
-`true`의 개수가 바로 H-Index입니다.
-
-```text
-true가 3개 → H-Index = 3
-```
-
-✅
+`n - i`편 이상의 논문이 `n - i`번 이상 인용되었다는 뜻입니다. ✅
 
 ---
 
 ## ⚠️ 주의
 
-이 풀이가 가능한 이유는 인용 수를 내림차순으로 정렬했기 때문입니다.
+이 풀이가 가능한 이유는 인용 수를 오름차순으로 정렬했기 때문입니다.
 
 정렬하지 않고 `Count()`만 하면 안 됩니다. 🚫
 
@@ -454,69 +423,13 @@ O(n log n)
 
 ## 📦 공간 복잡도
 
-LINQ 정렬 과정에서 추가 배열이 만들어질 수 있습니다.
+입력 배열을 직접 정렬합니다.
 
 ```text
-O(n)
+O(1)
 ```
 
 입니다.
-
----
-
-# ✨ 참고: 오름차순 정렬 풀이
-
-오름차순으로 정렬해서도 풀 수 있습니다.
-
-```text
-[0, 1, 3, 5, 6]
-```
-
-현재 위치 `i`에서 남은 논문 수는:
-
-```text
-n - i
-```
-
-입니다.
-
-만약:
-
-```text
-citations[i] >= n - i
-```
-
-라면 H-Index는 `n - i`가 됩니다.
-
-## 코드
-
-```csharp
-using System;
-
-public class Solution
-{
-    public int solution(int[] citations)
-    {
-        Array.Sort(citations);
-
-        int n = citations.Length;
-
-        for (int i = 0; i < n; i++)
-        {
-            int h = n - i;
-
-            if (citations[i] >= h)
-            {
-                return h;
-            }
-        }
-
-        return 0;
-    }
-}
-```
-
-이 방식도 매우 많이 쓰입니다. 👍
 
 ---
 
@@ -524,9 +437,8 @@ public class Solution
 
 | 풀이 | 핵심 방법 | 장점 | 시간 복잡도 | 공간 복잡도 |
 |---|---|---|---:|---:|
-| 풀이 1 | 내림차순 정렬 후 반복문 | 흐름이 이해하기 쉽다 😊 | O(n log n) | O(n) |
-| 풀이 2 | LINQ로 조건 개수 세기 | 코드가 짧다 🚀 | O(n log n) | O(n) |
-| 참고 풀이 | 오름차순 정렬 | 추가 배열이 적다 ⚡ | O(n log n) | O(1) |
+| 풀이 1 | 내림차순 정렬 후 반복문 | 흐름이 이해하기 쉽다 😊 | O(n log n) | O(1) |
+| 풀이 2 | 오름차순 정렬 후 바로 반환 | 코드가 짧다 🚀 | O(n log n) | O(1) |
 
 ---
 
@@ -542,13 +454,7 @@ public class Solution
 3. 예제와 함께 따라가기 좋습니다.
 ```
 
-프로그래머스 제출용으로 짧게 쓰고 싶다면 **풀이 2번 LINQ 방식**도 좋습니다.
-
-다만 LINQ를 쓰려면 반드시 다음을 포함해야 합니다.
-
-```csharp
-using System.Linq;
-```
+프로그래머스 제출용으로 짧게 쓰고 싶다면 **풀이 2번 오름차순 정렬 방식**도 좋습니다.
 
 ---
 

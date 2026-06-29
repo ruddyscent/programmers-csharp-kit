@@ -186,9 +186,7 @@ public class Solution
         for (int i = 0; i < phone_book.Length - 1; i++)
         {
             if (phone_book[i + 1].StartsWith(phone_book[i]))
-            {
                 return false;
-            }
         }
 
         return true;
@@ -293,22 +291,23 @@ O(1)
 
 ---
 
-# 🚀 풀이 2. 코드가 짧은 방법 — LINQ로 이웃 비교
+# 🚀 풀이 2. 표현식 버전 — LINQ로 이웃 비교
 
 ## 💡 아이디어
 
 풀이 1과 같은 정렬 기반 풀이입니다.
 
-다만 LINQ의 `OrderBy`, `Zip`, `Any`를 사용해서 더 짧게 표현할 수 있습니다.
+다만 LINQ의 `OrderBy`, `Zip`, `Any`를 사용해서 반복문을 표현식으로 바꿀 수 있습니다.
 
 정렬한 배열에서 이웃한 두 번호를 묶어 비교합니다.
+
+제출 코드 길이만 보면 풀이 1의 `Array.Sort` + `for`문이 더 낫습니다. ✅
 
 ---
 
 ## 💻 C# 코드
 
 ```csharp
-using System;
 using System.Linq;
 
 public class Solution
@@ -452,7 +451,7 @@ O(n)
 | 풀이 | 핵심 방법 | 장점 | 시간 복잡도 | 공간 복잡도 |
 |---|---|---|---:|---:|
 | 풀이 1 | `Array.Sort` 후 이웃 비교 | 이해하기 쉽고 빠르다 😊 | O(n log n) | O(1) |
-| 풀이 2 | LINQ로 정렬 후 이웃 비교 | 코드가 짧다 🚀 | O(n log n) | O(n) |
+| 풀이 2 | LINQ로 정렬 후 이웃 비교 | 표현식으로 쓸 수 있다 🚀 | O(n log n) | O(n) |
 
 ---
 
@@ -469,9 +468,9 @@ O(n)
 4. 프로그래머스 C# 환경에서 안정적으로 실행된다.
 ```
 
-LINQ에 익숙하다면 **풀이 2번**도 좋습니다.
+LINQ에 익숙하다면 **풀이 2번**도 이해용으로 좋습니다.
 
-다만 `OrderBy().ToArray()` 때문에 추가 배열이 만들어진다는 점은 알고 있어야 합니다. 📦
+다만 제출 코드 길이와 메모리까지 생각하면 `Array.Sort`를 쓰는 풀이 1번이 더 실용적입니다. 📦
 
 ---
 

@@ -132,9 +132,7 @@ public class Solution
         for (int i = 0; i < completion.Length; i++)
         {
             if (participant[i] != completion[i])
-            {
                 return participant[i];
-            }
         }
 
         return participant[participant.Length - 1];
@@ -199,7 +197,7 @@ O(1)
 
 단, 정렬 내부 구현에 따라 약간의 추가 공간이 사용될 수 있습니다.
 
-# 🚀 풀이 2. 빠른 방법 — Dictionary로 이름 개수 세기
+# 🚀 풀이 2. 빠른 버전 — Dictionary로 이름 개수 세기
 
 ## 💡 아이디어
 
@@ -215,40 +213,30 @@ O(1)
 
 마지막에 개수가 1 남은 이름이 완주하지 못한 선수입니다. 🏃
 
+코드 길이만 보면 풀이 1의 정렬 방식이 더 짧습니다.
+
+이 풀이는 줄 수를 조금 더 쓰는 대신 시간 복잡도를 `O(n)`으로 줄이는 방식입니다. ⚡
+
 ## 💻 C# 코드
 
 ```csharp
-using System;
 using System.Collections.Generic;
 
 public class Solution
 {
     public string solution(string[] participant, string[] completion)
     {
-        Dictionary<string, int> count = new Dictionary<string, int>();
+        var count = new Dictionary<string, int>();
 
-        foreach (string name in participant)
-        {
-            if (!count.ContainsKey(name))
-            {
-                count[name] = 0;
-            }
+        foreach (var name in participant)
+            count[name] = count.GetValueOrDefault(name) + 1;
 
-            count[name]++;
-        }
-
-        foreach (string name in completion)
-        {
+        foreach (var name in completion)
             count[name]--;
-        }
 
         foreach (var pair in count)
-        {
             if (pair.Value > 0)
-            {
                 return pair.Key;
-            }
-        }
 
         return "";
     }
@@ -260,15 +248,27 @@ public class Solution
 ### 1. 참가자 이름 개수 세기
 
 ```csharp
-foreach (string name in participant)
-{
-    if (!count.ContainsKey(name))
-    {
-        count[name] = 0;
-    }
+foreach (var name in participant)
+    count[name] = count.GetValueOrDefault(name) + 1;
+```
 
-    count[name]++;
+`GetValueOrDefault()`는 해당 키가 없으면 기본값인 `0`을 반환합니다.
+
+그래서 다음 코드를:
+
+```csharp
+if (!count.ContainsKey(name))
+{
+    count[name] = 0;
 }
+
+count[name]++;
+```
+
+이렇게 줄일 수 있습니다.
+
+```csharp
+count[name] = count.GetValueOrDefault(name) + 1;
 ```
 
 예를 들어:
@@ -288,10 +288,8 @@ ana    → 1
 ### 2. 완주자 이름 개수 빼기
 
 ```csharp
-foreach (string name in completion)
-{
+foreach (var name in completion)
     count[name]--;
-}
 ```
 
 완주한 사람은 참가자 명단에서 제거한다고 생각하면 됩니다. 🧹
@@ -308,12 +306,8 @@ mislav → 2에서 1
 
 ```csharp
 foreach (var pair in count)
-{
     if (pair.Value > 0)
-    {
         return pair.Key;
-    }
-}
 ```
 
 값이 0보다 큰 이름이 완주하지 못한 선수입니다. ✅
@@ -338,87 +332,16 @@ O(n)
 
 입니다.
 
-# ✨ 코드가 짧은 Dictionary 풀이
-
-C#의 `GetValueOrDefault()`를 사용하면 코드를 더 짧게 쓸 수 있습니다.
-
-## 💻 C# 코드
-
-```csharp
-using System;
-using System.Collections.Generic;
-
-public class Solution
-{
-    public string solution(string[] participant, string[] completion)
-    {
-        var count = new Dictionary<string, int>();
-
-        foreach (var name in participant)
-        {
-            count[name] = count.GetValueOrDefault(name) + 1;
-        }
-
-        foreach (var name in completion)
-        {
-            count[name]--;
-        }
-
-        foreach (var name in participant)
-        {
-            if (count[name] > 0)
-            {
-                return name;
-            }
-        }
-
-        return "";
-    }
-}
-```
-
 ## ⚠️ 참고
 
-`GetValueOrDefault()`는 해당 키가 없으면 기본값인 `0`을 반환합니다.
-
-그래서 다음 코드를:
-
-```csharp
-if (!count.ContainsKey(name))
-{
-    count[name] = 0;
-}
-
-count[name]++;
-```
-
-이렇게 줄일 수 있습니다.
-
-```csharp
-count[name] = count.GetValueOrDefault(name) + 1;
-```
-
-코드는 짧아지지만, 처음 공부할 때는 기본 Dictionary 버전이 더 이해하기 쉽습니다. 🌱
-
-## ⏱️ 시간 복잡도
-
-```text
-O(n)
-```
-
-## 📦 공간 복잡도
-
-```text
-O(n)
-```
+코드는 짧아지지만, 처음 공부할 때는 `ContainsKey()`로 직접 확인하는 흐름도 함께 알아두면 좋습니다. 🌱
 
 # ⚖️ 풀이 비교
 
 | 풀이 | 핵심 방법 | 장점 | 시간 복잡도 | 공간 복잡도 |
 |---|---|---|---:|---:|
 | 풀이 1 | 정렬 후 비교 | 이해하기 쉽다 😊 | O(n log n) | O(1) |
-| 풀이 2 | Dictionary로 개수 세기 | 빠르고 동명이인 처리에 좋다 🚀 | O(n) | O(n) |
-| 짧은 풀이 | `GetValueOrDefault()` 사용 | 코드가 짧다 ✨ | O(n) | O(n) |
+| 풀이 2 | Dictionary로 개수 세기 | 더 빠르다 🚀 | O(n) | O(n) |
 
 # 🏆 추천 풀이
 
@@ -428,7 +351,9 @@ O(n)
 두 배열을 정렬한 뒤 앞에서부터 비교한다.
 ```
 
-하지만 실전에서는 **Dictionary 풀이**를 더 추천합니다.
+코딩 테스트 제출용으로 코드 길이를 우선한다면 **정렬 풀이**도 충분히 좋습니다.
+
+시간 성능까지 더 챙기고 싶다면 **Dictionary 풀이**를 추천합니다.
 
 이유는 다음과 같습니다.
 

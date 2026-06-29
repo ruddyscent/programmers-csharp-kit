@@ -173,34 +173,27 @@ public class Solution
     {
         int n = money.Length;
 
-        int case1 = RobLine(money, 0, n - 2);
-        int case2 = RobLine(money, 1, n - 1);
-
-        return Math.Max(case1, case2);
+        return Math.Max(
+            RobLine(money, 0, n - 2),
+            RobLine(money, 1, n - 1)
+        );
     }
 
     private int RobLine(int[] money, int start, int end)
     {
-        int length = end - start + 1;
-        int[] dp = new int[length];
+        int[] dp = new int[end - start + 1];
 
         dp[0] = money[start];
 
-        if (length == 1)
-        {
+        if (dp.Length == 1)
             return dp[0];
-        }
 
         dp[1] = Math.Max(money[start], money[start + 1]);
 
-        for (int i = 2; i < length; i++)
-        {
-            int currentIndex = start + i;
+        for (int i = 2; i < dp.Length; i++)
+            dp[i] = Math.Max(dp[i - 1], dp[i - 2] + money[start + i]);
 
-            dp[i] = Math.Max(dp[i - 1], dp[i - 2] + money[currentIndex]);
-        }
-
-        return dp[length - 1];
+        return dp[dp.Length - 1];
     }
 }
 ```
@@ -212,13 +205,15 @@ public class Solution
 ### 1. 두 경우로 나누기
 
 ```csharp
-int case1 = RobLine(money, 0, n - 2);
-int case2 = RobLine(money, 1, n - 1);
+return Math.Max(
+    RobLine(money, 0, n - 2),
+    RobLine(money, 1, n - 1)
+);
 ```
 
-`case1`은 첫 번째 집을 고려하는 대신 마지막 집을 제외합니다.
+첫 번째 계산은 첫 번째 집을 고려하는 대신 마지막 집을 제외합니다.
 
-`case2`는 첫 번째 집을 제외하고 마지막 집을 고려합니다.
+두 번째 계산은 첫 번째 집을 제외하고 마지막 집을 고려합니다.
 
 ---
 
@@ -255,12 +250,12 @@ dp[1] = Math.Max(money[start], money[start + 1]);
 ### 5. 점화식
 
 ```csharp
-dp[i] = Math.Max(dp[i - 1], dp[i - 2] + money[currentIndex]);
+dp[i] = Math.Max(dp[i - 1], dp[i - 2] + money[start + i]);
 ```
 
 현재 집을 털지 않으면 `dp[i - 1]`입니다.
 
-현재 집을 털면 이전 집은 못 털기 때문에 `dp[i - 2] + money[currentIndex]`입니다.
+현재 집을 털면 이전 집은 못 털기 때문에 `dp[i - 2] + money[start + i]`입니다.
 
 둘 중 큰 값을 고릅니다. 🧠
 
@@ -290,7 +285,7 @@ O(n)
 
 ---
 
-# 🚀 풀이 2. 코드가 짧은 방법 — 변수 2개로 공간 줄이기
+# 🚀 풀이 2. 짧은 코드 버전 — 변수 2개로 공간 줄이기
 
 ## 💡 아이디어
 
@@ -331,8 +326,7 @@ public class Solution
 
     private int RobLine(int[] money, int start, int end)
     {
-        int prev2 = 0;
-        int prev1 = 0;
+        int prev2 = 0, prev1 = 0;
 
         for (int i = start; i <= end; i++)
         {

@@ -198,7 +198,6 @@ return [333, -45]
 ## 💻 C# 코드
 
 ```csharp
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -217,36 +216,27 @@ public class Solution
             if (command == "I")
             {
                 if (!map.ContainsKey(number))
-                {
                     map[number] = 0;
-                }
 
                 map[number]++;
             }
             else
             {
                 if (map.Count == 0)
-                {
                     continue;
-                }
 
                 int target = number == 1 ? map.Last().Key : map.First().Key;
 
                 map[target]--;
 
                 if (map[target] == 0)
-                {
                     map.Remove(target);
-                }
             }
         }
 
-        if (map.Count == 0)
-        {
-            return new int[] { 0, 0 };
-        }
-
-        return new int[] { map.Last().Key, map.First().Key };
+        return map.Count == 0
+            ? new int[] { 0, 0 }
+            : new int[] { map.Last().Key, map.First().Key };
     }
 }
 ```
@@ -423,7 +413,7 @@ O(n)
 
 ---
 
-# 🚀 풀이 2. 코드가 짧은 방법 — GetValueOrDefault 사용하기
+# 🚀 풀이 2. 짧은 코드 버전 — GetValueOrDefault 사용하기
 
 ## 💡 아이디어
 
@@ -442,7 +432,6 @@ map[number] = map.GetValueOrDefault(number) + 1;
 ## 💻 C# 코드
 
 ```csharp
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -464,16 +453,12 @@ public class Solution
             }
 
             if (map.Count == 0)
-            {
                 continue;
-            }
 
             int key = value == 1 ? map.Last().Key : map.First().Key;
 
             if (--map[key] == 0)
-            {
                 map.Remove(key);
-            }
         }
 
         return map.Count == 0
@@ -622,7 +607,7 @@ C#에서는 `SortedDictionary`가 가장 안정적인 선택입니다.
 3. 최댓값/최솟값 삭제 원리를 이해하기 좋습니다.
 ```
 
-프로그래머스 제출용으로는 **풀이 2번**도 좋습니다.
+코딩 테스트 제출용으로 코드 길이를 우선한다면 **풀이 2번**이 더 좋습니다.
 
 짧고 깔끔하지만 `GetValueOrDefault()`와 `First()`, `Last()`에 익숙해야 합니다. 🌱
 

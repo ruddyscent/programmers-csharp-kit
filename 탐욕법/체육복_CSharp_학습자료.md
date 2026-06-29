@@ -147,8 +147,6 @@ reserve = [3]
 ## 💻 C# 코드
 
 ```csharp
-using System;
-
 public class Solution
 {
     public int solution(int n, int[] lost, int[] reserve)
@@ -156,26 +154,18 @@ public class Solution
         int[] clothes = new int[n + 1];
 
         for (int i = 1; i <= n; i++)
-        {
             clothes[i] = 1;
-        }
 
         foreach (int student in lost)
-        {
             clothes[student]--;
-        }
 
         foreach (int student in reserve)
-        {
             clothes[student]++;
-        }
 
         for (int student = 1; student <= n; student++)
         {
             if (clothes[student] != 0)
-            {
                 continue;
-            }
 
             if (student > 1 && clothes[student - 1] == 2)
             {
@@ -194,9 +184,7 @@ public class Solution
         for (int student = 1; student <= n; student++)
         {
             if (clothes[student] >= 1)
-            {
                 answer++;
-            }
         }
 
         return answer;
@@ -317,7 +305,7 @@ O(n)
 
 입니다.
 
-# 🚀 풀이 2. 코드가 짧은 방법 — HashSet 사용하기
+# 🚀 풀이 2. 짧은 코드 버전 — HashSet 사용하기
 
 ## 💡 아이디어
 
@@ -330,7 +318,6 @@ O(n)
 ## 💻 C# 코드
 
 ```csharp
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -348,16 +335,8 @@ public class Solution
         }
 
         foreach (int student in lostSet.OrderBy(x => x).ToArray())
-        {
-            if (reserveSet.Remove(student - 1))
-            {
+            if (reserveSet.Remove(student - 1) || reserveSet.Remove(student + 1))
                 lostSet.Remove(student);
-            }
-            else if (reserveSet.Remove(student + 1))
-            {
-                lostSet.Remove(student);
-            }
-        }
 
         return n - lostSet.Count;
     }
@@ -403,25 +382,19 @@ foreach (int student in lostSet.OrderBy(x => x).ToArray())
 
 Set을 순회하면서 동시에 수정하면 오류가 날 수 있습니다. ⚠️
 
-### 4. 앞번호 학생에게 빌리기
+### 4. 앞번호부터 빌려 보기
 
 ```csharp
-if (reserveSet.Remove(student - 1))
+if (reserveSet.Remove(student - 1) || reserveSet.Remove(student + 1))
 ```
 
 `Remove()`는 해당 값이 있으면 제거하고 `true`를 반환합니다.
 
-즉, 앞번호 학생이 여벌을 가지고 있으면 바로 빌리는 효과가 납니다.
+`||`는 앞 조건이 실패했을 때만 뒤 조건을 확인합니다.
 
-### 5. 뒷번호 학생에게 빌리기
+따라서 앞번호에게 먼저 빌리고, 안 되면 뒷번호에게 빌리는 흐름이 유지됩니다.
 
-```csharp
-else if (reserveSet.Remove(student + 1))
-```
-
-앞번호에게 못 빌렸다면 뒷번호에게 빌려 봅니다.
-
-### 6. 빌렸다면 lostSet에서 제거
+### 5. 빌렸다면 lostSet에서 제거
 
 ```csharp
 lostSet.Remove(student);
@@ -494,7 +467,7 @@ O(l + r)
 3. 그리디 흐름을 이해하기 쉽습니다.
 ```
 
-HashSet과 LINQ에 익숙하다면 **풀이 2번**도 좋습니다.
+코딩 테스트 제출용으로 코드 길이를 우선한다면 **풀이 2번**이 더 좋습니다.
 
 단, 프로그래머스 환경 호환성을 생각하면 `new HashSet<int>(lost)` 방식이 더 안전합니다. ✅
 

@@ -183,7 +183,6 @@ dp[3]과 dp[1] 조합
 ## 💻 C# 코드
 
 ```csharp
-using System;
 using System.Collections.Generic;
 
 public class Solution
@@ -193,13 +192,13 @@ public class Solution
         List<HashSet<int>> dp = new List<HashSet<int>>();
 
         for (int i = 0; i <= 8; i++)
-        {
             dp.Add(new HashSet<int>());
-        }
+
+        int repeatedNumber = 0;
 
         for (int count = 1; count <= 8; count++)
         {
-            int repeatedNumber = MakeRepeatedNumber(N, count);
+            repeatedNumber = repeatedNumber * 10 + N;
             dp[count].Add(repeatedNumber);
 
             for (int leftCount = 1; leftCount < count; leftCount++)
@@ -215,32 +214,16 @@ public class Solution
                         dp[count].Add(left * right);
 
                         if (right != 0)
-                        {
                             dp[count].Add(left / right);
-                        }
                     }
                 }
             }
 
             if (dp[count].Contains(number))
-            {
                 return count;
-            }
         }
 
         return -1;
-    }
-
-    private int MakeRepeatedNumber(int N, int count)
-    {
-        int result = 0;
-
-        for (int i = 0; i < count; i++)
-        {
-            result = result * 10 + N;
-        }
-
-        return result;
     }
 }
 ```
@@ -277,7 +260,7 @@ for (int i = 0; i <= 8; i++)
 ### 3. N을 이어 붙인 수 넣기
 
 ```csharp
-int repeatedNumber = MakeRepeatedNumber(N, count);
+repeatedNumber = repeatedNumber * 10 + N;
 dp[count].Add(repeatedNumber);
 ```
 
@@ -391,57 +374,45 @@ O(가능한 중간 결과 수)
 
 ---
 
-# 🚀 풀이 2. 코드가 짧은 방법 — LINQ로 초기화하기
+# 🚀 풀이 2. 짧은 코드 버전 — 배열로 간결하게 쓰기
 
 ## 💡 아이디어
 
 풀이 1과 같은 DP 방식입니다.
 
-다만 `dp` 초기화와 반복 숫자 생성을 조금 더 짧게 작성합니다.
+다만 `HashSet` 배열을 바로 만들고, 반복문 중괄호를 줄여 제출 코드에 가깝게 작성합니다.
 
 ---
 
 ## 💻 C# 코드
 
 ```csharp
-using System;
 using System.Collections.Generic;
-using System.Linq;
 
 public class Solution
 {
     public int solution(int N, int number)
     {
-        var dp = Enumerable.Range(0, 9)
-            .Select(_ => new HashSet<int>())
-            .ToArray();
+        var dp = new HashSet<int>[9];
+        for (int i = 0; i < 9; i++) dp[i] = new HashSet<int>();
 
-        for (int i = 1; i <= 8; i++)
+        for (int i = 1, repeated = 0; i <= 8; i++)
         {
-            dp[i].Add(int.Parse(new string((char)('0' + N), i)));
+            repeated = repeated * 10 + N;
+            dp[i].Add(repeated);
 
             for (int j = 1; j < i; j++)
+            foreach (int a in dp[j])
+            foreach (int b in dp[i - j])
             {
-                foreach (int a in dp[j])
-                {
-                    foreach (int b in dp[i - j])
-                    {
-                        dp[i].Add(a + b);
-                        dp[i].Add(a - b);
-                        dp[i].Add(a * b);
+                dp[i].Add(a + b);
+                dp[i].Add(a - b);
+                dp[i].Add(a * b);
 
-                        if (b != 0)
-                        {
-                            dp[i].Add(a / b);
-                        }
-                    }
-                }
+                if (b != 0) dp[i].Add(a / b);
             }
 
-            if (dp[i].Contains(number))
-            {
-                return i;
-            }
+            if (dp[i].Contains(number)) return i;
         }
 
         return -1;
@@ -456,9 +427,8 @@ public class Solution
 ### 1. HashSet 배열 만들기
 
 ```csharp
-var dp = Enumerable.Range(0, 9)
-    .Select(_ => new HashSet<int>())
-    .ToArray();
+var dp = new HashSet<int>[9];
+for (int i = 0; i < 9; i++) dp[i] = new HashSet<int>();
 ```
 
 `dp[0]`부터 `dp[8]`까지 `HashSet<int>`를 만듭니다.
@@ -468,7 +438,7 @@ var dp = Enumerable.Range(0, 9)
 ### 2. N을 반복한 숫자 만들기
 
 ```csharp
-int.Parse(new string((char)('0' + N), i))
+repeated = repeated * 10 + N;
 ```
 
 예를 들어:
@@ -478,11 +448,10 @@ N = 5
 i = 3
 ```
 
-이면:
+처럼 한 번씩 갱신하면:
 
 ```text
-new string('5', 3) = "555"
-int.Parse("555") = 555
+5 → 55 → 555
 ```
 
 가 됩니다.
@@ -503,15 +472,13 @@ foreach (int a in dp[j])
 
 ## ⚠️ 프로그래머스에서 실행할 때 주의
 
-LINQ를 사용하므로 다음 네임스페이스가 필요합니다.
+`HashSet`을 사용하므로 다음 네임스페이스가 필요합니다.
 
 ```csharp
-using System.Linq;
+using System.Collections.Generic;
 ```
 
 다만 핵심 로직은 여전히 DP와 HashSet입니다.
-
-LINQ는 초기화 부분을 줄이는 정도로만 사용했습니다. 🌱
 
 ---
 
@@ -599,7 +566,7 @@ N을 i번 사용해서 만들 수 있는 모든 값
 | 풀이 | 핵심 방법 | 장점 | 시간 복잡도 | 공간 복잡도 |
 |---|---|---|---:|---:|
 | 풀이 1 | DP + HashSet + 직접 반복 숫자 생성 | 원리가 잘 보인다 😊 | O(8 × 조합 수) | O(중간 결과 수) |
-| 풀이 2 | DP + HashSet + LINQ 초기화 | 코드가 짧다 🚀 | O(8 × 조합 수) | O(중간 결과 수) |
+| 풀이 2 | DP + HashSet 배열 | 제출 코드가 짧다 🚀 | O(8 × 조합 수) | O(중간 결과 수) |
 
 ---
 
@@ -617,7 +584,7 @@ N을 i번 사용해서 만들 수 있는 모든 값
 
 프로그래머스 제출용으로는 **풀이 2번**도 좋습니다.
 
-다만 LINQ와 문자열 반복 표현이 익숙하지 않다면 풀이 1번이 더 안전합니다. ✅
+다만 중첩 반복문의 중괄호를 많이 생략하므로, 처음에는 풀이 1번으로 흐름을 잡는 편이 안전합니다. ✅
 
 ---
 

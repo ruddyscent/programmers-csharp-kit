@@ -221,27 +221,21 @@ width × height = total
 ## 💻 C# 코드
 
 ```csharp
-using System;
-
 public class Solution
 {
     public int[] solution(int brown, int yellow)
     {
         int total = brown + yellow;
 
-        for (int height = 3; height <= Math.Sqrt(total); height++)
+        for (int height = 3; height * height <= total; height++)
         {
             if (total % height != 0)
-            {
                 continue;
-            }
 
             int width = total / height;
 
             if ((width - 2) * (height - 2) == yellow)
-            {
                 return new int[] { width, height };
-            }
         }
 
         return new int[0];
@@ -272,7 +266,7 @@ int total = brown + yellow;
 ### 2. 높이 후보 탐색
 
 ```csharp
-for (int height = 3; height <= Math.Sqrt(total); height++)
+for (int height = 3; height * height <= total; height++)
 ```
 
 세로 길이는 최소 3입니다.
@@ -358,40 +352,30 @@ O(1)
 
 ---
 
-# 🚀 풀이 2. 코드가 짧은 방법 — LINQ 스타일
+# 🚀 풀이 2. 짧은 코드 버전 — 약수 조건 바로 확인하기
 
 ## 💡 아이디어
 
-전체 칸 수의 약수 중에서 조건을 만족하는 첫 번째 조합을 찾습니다.
+풀이 1과 같은 약수 탐색입니다.
 
-LINQ의:
-
-```csharp
-Enumerable.Range(...)
-```
-
-를 활용합니다.
+다만 `Math.Sqrt()`와 LINQ를 쓰지 않고 `height * height <= total` 조건으로 바로 확인합니다.
 
 ---
 
 ## 💻 C# 코드
 
 ```csharp
-using System;
-using System.Linq;
-
 public class Solution
 {
     public int[] solution(int brown, int yellow)
     {
         int total = brown + yellow;
 
-        int height = Enumerable.Range(3, (int)Math.Sqrt(total) - 2)
-            .First(h =>
-                total % h == 0 &&
-                (total / h - 2) * (h - 2) == yellow);
+        for (int h = 3; h * h <= total; h++)
+            if (total % h == 0 && (total / h - 2) * (h - 2) == yellow)
+                return new int[] { total / h, h };
 
-        return new int[] { total / height, height };
+        return new int[0];
     }
 }
 ```
@@ -400,61 +384,35 @@ public class Solution
 
 ## ✨ 코드 의미
 
-### 1. 가능한 높이 생성
+### 1. 가능한 높이 확인
 
 ```csharp
-Enumerable.Range(3, (int)Math.Sqrt(total) - 2)
+for (int h = 3; h * h <= total; h++)
 ```
 
-3부터 √total까지 생성합니다.
+3부터 √total까지 확인합니다.
 
 ---
 
 ### 2. 조건 만족하는 높이 찾기
 
-```csharp
-.First(...)
-```
-
-첫 번째로 조건을 만족하는 높이를 찾습니다.
-
 조건:
 
 ```csharp
-total % h == 0
+total % h == 0 && (total / h - 2) * (h - 2) == yellow
 ```
 
-약수이고,
-
-```csharp
-(total / h - 2) * (h - 2) == yellow
-```
-
-내부 노란색 개수가 맞아야 합니다.
+약수이면서 내부 노란색 개수가 맞아야 합니다.
 
 ---
 
 ### 3. 가로 계산
 
 ```csharp
-total / height
+total / h
 ```
 
 입니다.
-
----
-
-## ⚠️ 프로그래머스에서 실행할 때 주의
-
-LINQ를 사용하므로:
-
-```csharp
-using System.Linq;
-```
-
-가 필요합니다.
-
-프로그래머스 C# 환경에서 실행 가능합니다. ✅
 
 ---
 

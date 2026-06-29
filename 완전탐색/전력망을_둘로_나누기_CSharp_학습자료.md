@@ -170,35 +170,28 @@ public class Solution
 {
     public int solution(int n, int[,] wires)
     {
-        int answer = n;
+        int answer = n, m = wires.GetLength(0);
 
-        for (int cut = 0; cut < wires.GetLength(0); cut++)
+        for (int cut = 0; cut < m; cut++)
         {
             List<int>[] graph = new List<int>[n + 1];
 
             for (int i = 1; i <= n; i++)
-            {
                 graph[i] = new List<int>();
-            }
 
-            for (int i = 0; i < wires.GetLength(0); i++)
+            for (int i = 0; i < m; i++)
             {
                 if (i == cut)
-                {
                     continue;
-                }
 
-                int a = wires[i, 0];
-                int b = wires[i, 1];
+                int a = wires[i, 0], b = wires[i, 1];
 
                 graph[a].Add(b);
                 graph[b].Add(a);
             }
 
             int count = CountConnectedNodes(1, graph, n);
-            int difference = Math.Abs(n - 2 * count);
-
-            answer = Math.Min(answer, difference);
+            answer = Math.Min(answer, Math.Abs(n - 2 * count));
         }
 
         return answer;
@@ -222,9 +215,7 @@ public class Solution
             foreach (int next in graph[current])
             {
                 if (visited[next])
-                {
                     continue;
-                }
 
                 visited[next] = true;
                 queue.Enqueue(next);
@@ -243,7 +234,7 @@ public class Solution
 ### 1. 끊을 전선을 하나씩 선택
 
 ```csharp
-for (int cut = 0; cut < wires.GetLength(0); cut++)
+for (int cut = 0; cut < m; cut++)
 ```
 
 `cut`번째 전선을 끊는다고 가정하고 시뮬레이션합니다.
@@ -256,9 +247,7 @@ for (int cut = 0; cut < wires.GetLength(0); cut++)
 List<int>[] graph = new List<int>[n + 1];
 
 for (int i = 1; i <= n; i++)
-{
     graph[i] = new List<int>();
-}
 ```
 
 송전탑 번호가 1부터 시작하므로 배열 크기를 `n + 1`로 만듭니다.
@@ -269,9 +258,7 @@ for (int i = 1; i <= n; i++)
 
 ```csharp
 if (i == cut)
-{
     continue;
-}
 ```
 
 현재 끊기로 한 전선은 그래프에 넣지 않습니다.
@@ -302,7 +289,7 @@ int count = CountConnectedNodes(1, graph, n);
 ### 5. 차이 계산
 
 ```csharp
-int difference = Math.Abs(n - 2 * count);
+answer = Math.Min(answer, Math.Abs(n - 2 * count));
 ```
 
 한쪽이 `count`개라면 다른 쪽은 `n - count`개입니다.
@@ -345,19 +332,21 @@ O(n)
 
 ---
 
-# 🚀 풀이 2. 코드가 짧은 방법 — 그래프를 한 번 만들고 끊은 간선만 무시하기
+# 🚀 풀이 2. 짧은 코드 버전 — 부모 방향만 막고 DFS하기
 
 ## 💡 아이디어
 
 풀이 1은 전선을 끊을 때마다 그래프를 새로 만듭니다.
 
-더 짧게 쓰려면 그래프는 한 번만 만들고, DFS/BFS 중에 끊은 전선만 지나가지 않도록 처리할 수 있습니다.
+더 짧게 쓰려면 그래프는 한 번만 만들고, 끊은 전선의 한쪽에서 DFS를 시작합니다.
 
-즉, DFS에서 다음 간선이 끊은 간선이면 건너뜁니다.
+예를 들어 `a - b` 전선을 끊는다면:
 
 ```text
-cutA - cutB 간선은 이동하지 않기
+a에서 시작하되 b 방향으로는 가지 않기
 ```
+
+트리는 사이클이 없으므로 방문 배열 대신 `parent`만 들고 가도 됩니다.
 
 ---
 
@@ -374,58 +363,36 @@ public class Solution
         List<int>[] graph = new List<int>[n + 1];
 
         for (int i = 1; i <= n; i++)
-        {
             graph[i] = new List<int>();
-        }
 
-        for (int i = 0; i < wires.GetLength(0); i++)
+        int answer = n, m = wires.GetLength(0);
+
+        for (int i = 0; i < m; i++)
         {
-            int a = wires[i, 0];
-            int b = wires[i, 1];
+            int a = wires[i, 0], b = wires[i, 1];
 
             graph[a].Add(b);
             graph[b].Add(a);
         }
-
-        int answer = n;
-
-        for (int i = 0; i < wires.GetLength(0); i++)
+        int Dfs(int current, int parent)
         {
-            int cutA = wires[i, 0];
-            int cutB = wires[i, 1];
+            int count = 1;
 
-            bool[] visited = new bool[n + 1];
-
-            int count = Dfs(1, cutA, cutB, graph, visited);
-            int difference = Math.Abs(n - 2 * count);
-
-            answer = Math.Min(answer, difference);
-        }
-
-        return answer;
-    }
-
-    private int Dfs(int current, int cutA, int cutB, List<int>[] graph, bool[] visited)
-    {
-        visited[current] = true;
-
-        int count = 1;
-
-        foreach (int next in graph[current])
-        {
-            bool isCutEdge =
-                (current == cutA && next == cutB) ||
-                (current == cutB && next == cutA);
-
-            if (isCutEdge || visited[next])
+            foreach (int next in graph[current])
             {
-                continue;
+                if (next == parent)
+                    continue;
+
+                count += Dfs(next, current);
             }
 
-            count += Dfs(next, cutA, cutB, graph, visited);
+            return count;
         }
 
-        return count;
+        for (int i = 0; i < m; i++)
+            answer = Math.Min(answer, Math.Abs(n - 2 * Dfs(wires[i, 0], wires[i, 1])));
+
+        return answer;
     }
 }
 ```
@@ -445,42 +412,33 @@ graph[b].Add(a);
 
 ---
 
-### 2. 끊을 전선을 정한다
+### 2. 끊을 전선을 기준으로 한쪽 크기를 센다
 
 ```csharp
-int cutA = wires[i, 0];
-int cutB = wires[i, 1];
+answer = Math.Min(answer, Math.Abs(n - 2 * Dfs(wires[i, 0], wires[i, 1])));
 ```
 
-이번에 끊는 전선입니다.
+`wires[i, 0]`에서 시작하되 `wires[i, 1]` 방향으로는 가지 않습니다.
 
 ---
 
-### 3. DFS 중 끊은 전선은 무시한다
+### 3. 부모 방향은 무시한다
 
 ```csharp
-bool isCutEdge =
-    (current == cutA && next == cutB) ||
-    (current == cutB && next == cutA);
-```
-
-그래프는 양방향이므로 두 방향 모두 확인해야 합니다.
-
-끊은 전선이면 이동하지 않습니다.
-
-```csharp
-if (isCutEdge || visited[next])
-{
+if (next == parent)
     continue;
-}
 ```
+
+트리에서는 직전에 온 방향만 막으면 다시 돌아가지 않습니다.
+
+처음 호출에서 `parent`를 끊긴 반대편 송전탑으로 넘기므로, 끊은 전선도 자연스럽게 막힙니다.
 
 ---
 
 ### 4. 연결된 송전탑 개수 반환
 
 ```csharp
-count += Dfs(next, cutA, cutB, graph, visited);
+count += Dfs(next, current);
 ```
 
 DFS로 갈 수 있는 송전탑 개수를 모두 더합니다.
@@ -508,26 +466,6 @@ O(n)
 ```
 
 입니다.
-
----
-
-# ✨ LINQ를 살짝 쓴 참고 풀이
-
-그래프 초기화를 LINQ로 조금 줄일 수 있습니다.
-
-```csharp
-List<int>[] graph = Enumerable.Range(0, n + 1)
-    .Select(_ => new List<int>())
-    .ToArray();
-```
-
-다만 이 문제는 그래프 탐색이 핵심이므로, LINQ를 많이 쓰기보다는 DFS/BFS 흐름을 명확히 쓰는 편이 좋습니다. 🌱
-
-LINQ를 사용하려면 다음이 필요합니다.
-
-```csharp
-using System.Linq;
-```
 
 ---
 

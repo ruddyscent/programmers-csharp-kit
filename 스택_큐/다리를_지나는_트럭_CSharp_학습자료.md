@@ -166,7 +166,6 @@ currentWeight += nextTruck;
 ## 💻 C# 코드
 
 ```csharp
-using System;
 using System.Collections.Generic;
 
 public class Solution
@@ -176,13 +175,9 @@ public class Solution
         Queue<int> bridge = new Queue<int>();
 
         for (int i = 0; i < bridge_length; i++)
-        {
             bridge.Enqueue(0);
-        }
 
-        int time = 0;
-        int currentWeight = 0;
-        int truckIndex = 0;
+        int time = 0, currentWeight = 0, truckIndex = 0;
 
         while (truckIndex < truck_weights.Length)
         {
@@ -346,7 +341,7 @@ O(bridge_length)
 
 ---
 
-# 🚀 풀이 2. 코드가 짧은 방법 — Queue에 트럭과 0을 함께 넣기
+# 🚀 풀이 2. 짧은 코드 버전 — Queue에 트럭과 0을 함께 넣기
 
 ## 💡 아이디어
 
@@ -365,19 +360,15 @@ O(bridge_length)
 ## 💻 C# 코드
 
 ```csharp
-using System;
 using System.Collections.Generic;
-using System.Linq;
 
 public class Solution
 {
     public int solution(int bridge_length, int weight, int[] truck_weights)
     {
-        Queue<int> bridge = new Queue<int>(Enumerable.Repeat(0, bridge_length));
+        Queue<int> bridge = new Queue<int>(new int[bridge_length]);
 
-        int time = 0;
-        int currentWeight = 0;
-        int index = 0;
+        int time = 0, currentWeight = 0, index = 0;
 
         while (index < truck_weights.Length)
         {
@@ -407,16 +398,10 @@ public class Solution
 ### 1. 다리를 한 줄로 초기화
 
 ```csharp
-Queue<int> bridge = new Queue<int>(Enumerable.Repeat(0, bridge_length));
+Queue<int> bridge = new Queue<int>(new int[bridge_length]);
 ```
 
-`0`을 `bridge_length`개 만든 뒤 Queue에 넣습니다.
-
-LINQ를 사용하므로 아래 네임스페이스가 필요합니다.
-
-```csharp
-using System.Linq;
-```
+`new int[bridge_length]`는 0으로 채워진 배열입니다.
 
 ---
 
@@ -427,18 +412,6 @@ bridge.Enqueue(truck_weights[index++]);
 ```
 
 현재 트럭을 다리에 올린 뒤, 다음 트럭을 가리키도록 `index`를 증가시킵니다. 🚚
-
----
-
-## ⚠️ 프로그래머스에서 실행할 때 주의
-
-이 풀이에서는 LINQ를 사용하므로 다음이 필요합니다.
-
-```csharp
-using System.Linq;
-```
-
-프로그래머스 C# 환경에서 실행할 수 있습니다. ✅
 
 ---
 
@@ -497,7 +470,7 @@ return time + bridge_length;
 | 풀이 | 핵심 방법 | 장점 | 시간 복잡도 | 공간 복잡도 |
 |---|---|---|---:|---:|
 | 풀이 1 | Queue를 직접 초기화 | 이해하기 쉽다 😊 | O(t + b) | O(b) |
-| 풀이 2 | LINQ로 Queue 초기화 | 코드가 짧다 🚀 | O(t + b) | O(b) |
+| 풀이 2 | 0 배열로 Queue 초기화 | 코드가 짧다 🚀 | O(t + b) | O(b) |
 
 `t`는 트럭 수, `b`는 다리 길이입니다.
 
@@ -517,7 +490,7 @@ return time + bridge_length;
 
 코드를 조금 더 짧게 쓰고 싶다면 **풀이 2번**도 좋습니다.
 
-다만 `Enumerable.Repeat`을 쓰므로 `using System.Linq;`를 잊지 않아야 합니다. ⚠️
+`new int[bridge_length]`로 0이 채워진 다리를 바로 만들 수 있습니다. ⚡
 
 ---
 

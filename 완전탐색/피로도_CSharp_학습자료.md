@@ -168,8 +168,6 @@ DFS 진행
 ## 💻 C# 코드
 
 ```csharp
-using System;
-
 public class Solution
 {
     private int answer = 0;
@@ -186,25 +184,16 @@ public class Solution
 
     private void Dfs(int currentFatigue, int count, int[,] dungeons)
     {
-        answer = Math.Max(answer, count);
+        if (count > answer)
+            answer = count;
 
         for (int i = 0; i < dungeons.GetLength(0); i++)
         {
-            int required = dungeons[i, 0];
-            int cost = dungeons[i, 1];
-
-            if (visited[i])
-            {
+            if (visited[i] || currentFatigue < dungeons[i, 0])
                 continue;
-            }
-
-            if (currentFatigue < required)
-            {
-                continue;
-            }
 
             visited[i] = true;
-            Dfs(currentFatigue - cost, count + 1, dungeons);
+            Dfs(currentFatigue - dungeons[i, 1], count + 1, dungeons);
             visited[i] = false;
         }
     }
@@ -253,7 +242,8 @@ Dfs(k, 0, dungeons);
 ### 4. 최대값 갱신
 
 ```csharp
-answer = Math.Max(answer, count);
+if (count > answer)
+    answer = count;
 ```
 
 현재까지 탐험한 던전 수가 최대라면 갱신합니다. 🏆
@@ -270,37 +260,24 @@ for (int i = 0; i < dungeons.GetLength(0); i++)
 
 ---
 
-### 6. 이미 방문한 던전은 건너뛰기
+### 6. 이미 방문했거나 피로도가 부족하면 건너뛰기
 
 ```csharp
-if (visited[i])
-{
+if (visited[i] || currentFatigue < dungeons[i, 0])
     continue;
-}
 ```
 
 던전은 하루에 한 번씩만 탐험할 수 있습니다.
-
----
-
-### 7. 피로도가 부족하면 건너뛰기
-
-```csharp
-if (currentFatigue < required)
-{
-    continue;
-}
-```
 
 현재 피로도가 최소 필요 피로도보다 작으면 탐험할 수 없습니다.
 
 ---
 
-### 8. 방문 처리 후 DFS
+### 7. 방문 처리 후 DFS
 
 ```csharp
 visited[i] = true;
-Dfs(currentFatigue - cost, count + 1, dungeons);
+Dfs(currentFatigue - dungeons[i, 1], count + 1, dungeons);
 visited[i] = false;
 ```
 
@@ -340,7 +317,7 @@ O(n)
 
 ---
 
-# 🚀 풀이 2. 코드가 짧은 방법 — 로컬 함수로 간결하게 작성하기
+# 🚀 풀이 2. 짧은 코드 버전 — 로컬 함수로 간결하게 작성하기
 
 ## 💡 아이디어
 
@@ -355,8 +332,6 @@ O(n)
 ## 💻 C# 코드
 
 ```csharp
-using System;
-
 public class Solution
 {
     public int solution(int k, int[,] dungeons)
@@ -367,14 +342,13 @@ public class Solution
 
         void Dfs(int fatigue, int count)
         {
-            answer = Math.Max(answer, count);
+            if (count > answer)
+                answer = count;
 
             for (int i = 0; i < n; i++)
             {
                 if (visited[i] || fatigue < dungeons[i, 0])
-                {
                     continue;
-                }
 
                 visited[i] = true;
                 Dfs(fatigue - dungeons[i, 1], count + 1);

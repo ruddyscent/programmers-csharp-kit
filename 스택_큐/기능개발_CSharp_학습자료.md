@@ -156,7 +156,6 @@ int days = (100 - progress + speed - 1) / speed;
 ## 💻 C# 코드
 
 ```csharp
-using System;
 using System.Collections.Generic;
 
 public class Solution
@@ -167,22 +166,16 @@ public class Solution
         int[] days = new int[n];
 
         for (int i = 0; i < n; i++)
-        {
-            int remaining = 100 - progresses[i];
-            days[i] = (remaining + speeds[i] - 1) / speeds[i];
-        }
+            days[i] = (99 - progresses[i]) / speeds[i] + 1;
 
         List<int> answer = new List<int>();
 
-        int deployDay = days[0];
-        int count = 1;
+        int deployDay = days[0], count = 1;
 
         for (int i = 1; i < n; i++)
         {
             if (days[i] <= deployDay)
-            {
                 count++;
-            }
             else
             {
                 answer.Add(count);
@@ -205,8 +198,7 @@ public class Solution
 ### 1. 완료까지 필요한 날짜 계산
 
 ```csharp
-int remaining = 100 - progresses[i];
-days[i] = (remaining + speeds[i] - 1) / speeds[i];
+days[i] = (99 - progresses[i]) / speeds[i] + 1;
 ```
 
 예를 들어:
@@ -214,8 +206,7 @@ days[i] = (remaining + speeds[i] - 1) / speeds[i];
 ```text
 progress = 93
 speed = 1
-remaining = 7
-days = 7
+days = (99 - 93) / 1 + 1 = 7
 ```
 
 입니다.
@@ -225,8 +216,7 @@ days = 7
 ```text
 progress = 95
 speed = 4
-remaining = 5
-days = (5 + 4 - 1) / 4 = 8 / 4 = 2
+days = (99 - 95) / 4 + 1 = 2
 ```
 
 정수 나눗셈으로 올림을 처리했습니다. ✅
@@ -319,7 +309,7 @@ O(n)
 
 ---
 
-# 🚀 풀이 2. 코드가 짧은 방법 — 날짜 배열 없이 바로 묶기
+# 🚀 풀이 2. 짧은 코드 버전 — 날짜 배열 없이 바로 묶기
 
 ## 💡 아이디어
 
@@ -338,7 +328,6 @@ O(n)
 ## 💻 C# 코드
 
 ```csharp
-using System;
 using System.Collections.Generic;
 
 public class Solution
@@ -347,27 +336,22 @@ public class Solution
     {
         List<int> answer = new List<int>();
 
-        int deployDay = 0;
-        int count = 0;
+        int deployDay = 0, count = 0;
 
         for (int i = 0; i < progresses.Length; i++)
         {
-            int day = (100 - progresses[i] + speeds[i] - 1) / speeds[i];
+            int day = (99 - progresses[i]) / speeds[i] + 1;
 
             if (day > deployDay)
             {
                 if (count > 0)
-                {
                     answer.Add(count);
-                }
 
                 deployDay = day;
-                count = 1;
+                count = 0;
             }
-            else
-            {
-                count++;
-            }
+
+            count++;
         }
 
         answer.Add(count);
@@ -382,7 +366,7 @@ public class Solution
 ## ✨ 이 코드의 핵심
 
 ```csharp
-int day = (100 - progresses[i] + speeds[i] - 1) / speeds[i];
+int day = (99 - progresses[i]) / speeds[i] + 1;
 ```
 
 현재 기능의 완료 날짜를 바로 계산합니다.
@@ -393,14 +377,7 @@ if (day > deployDay)
 
 현재 배포 기준일보다 늦게 끝나면 새 배포가 필요합니다.
 
-```csharp
-else
-{
-    count++;
-}
-```
-
-현재 배포 기준일 안에 끝나는 기능이라면 같은 배포에 포함합니다. 🎁
+현재 배포 기준일 안에 끝나는 기능이라면 새 묶음을 시작하지 않고 `count++`만 합니다. 🎁
 
 ---
 
@@ -436,60 +413,12 @@ O(n)
 
 ---
 
-# ✨ 참고: LINQ로 완료 날짜 만들기
-
-LINQ를 사용하면 완료 날짜 배열을 짧게 만들 수 있습니다.
-
-```csharp
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-public class Solution
-{
-    public int[] solution(int[] progresses, int[] speeds)
-    {
-        var days = progresses
-            .Select((progress, i) => (100 - progress + speeds[i] - 1) / speeds[i])
-            .ToArray();
-
-        List<int> answer = new List<int>();
-
-        int deployDay = days[0];
-        int count = 1;
-
-        foreach (int day in days.Skip(1))
-        {
-            if (day <= deployDay)
-            {
-                count++;
-            }
-            else
-            {
-                answer.Add(count);
-                deployDay = day;
-                count = 1;
-            }
-        }
-
-        answer.Add(count);
-
-        return answer.ToArray();
-    }
-}
-```
-
-`using System.Linq;`를 추가하면 프로그래머스에서도 실행할 수 있습니다. ✅
-
----
-
 # ⚖️ 풀이 비교
 
 | 풀이 | 핵심 방법 | 장점 | 시간 복잡도 | 공간 복잡도 |
 |---|---|---|---:|---:|
 | 풀이 1 | 완료 날짜 배열 생성 후 묶기 | 이해하기 쉽다 😊 | O(n) | O(n) |
 | 풀이 2 | 날짜 계산과 묶기를 동시에 처리 | 코드가 짧고 메모리를 덜 쓴다 🚀 | O(n) | O(n) |
-| LINQ 참고 풀이 | `Select`로 날짜 계산 | 표현이 깔끔하다 ✨ | O(n) | O(n) |
 
 ---
 

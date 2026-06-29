@@ -190,41 +190,29 @@ B는 최소
 
 ```csharp
 using System;
-using System.Collections.Generic;
 
 public class Solution
 {
     public int solution(string[] arr)
     {
-        List<int> numbers = new List<int>();
-        List<string> operators = new List<string>();
-
-        for (int i = 0; i < arr.Length; i++)
-        {
-            if (i % 2 == 0)
-            {
-                numbers.Add(int.Parse(arr[i]));
-            }
-            else
-            {
-                operators.Add(arr[i]);
-            }
-        }
-
-        int n = numbers.Count;
-
-        int[,] maxDp = new int[n, n];
-        int[,] minDp = new int[n, n];
+        int n = arr.Length / 2 + 1;
+        int[] numbers = new int[n];
+        string[] operators = new string[n - 1];
 
         for (int i = 0; i < n; i++)
-        {
-            maxDp[i, i] = numbers[i];
-            minDp[i, i] = numbers[i];
-        }
+            numbers[i] = int.Parse(arr[i * 2]);
+
+        for (int i = 0; i < n - 1; i++)
+            operators[i] = arr[i * 2 + 1];
+
+        int[,] maxDp = new int[n, n], minDp = new int[n, n];
+
+        for (int i = 0; i < n; i++)
+            maxDp[i, i] = minDp[i, i] = numbers[i];
 
         for (int length = 2; length <= n; length++)
         {
-            for (int start = 0; start + length - 1 < n; start++)
+            for (int start = 0; start + length <= n; start++)
             {
                 int end = start + length - 1;
 
@@ -233,12 +221,10 @@ public class Solution
 
                 for (int mid = start; mid < end; mid++)
                 {
-                    string op = operators[mid];
-
                     int maxValue;
                     int minValue;
 
-                    if (op == "+")
+                    if (operators[mid] == "+")
                     {
                         maxValue = maxDp[start, mid] + maxDp[mid + 1, end];
                         minValue = minDp[start, mid] + minDp[mid + 1, end];
@@ -267,14 +253,8 @@ public class Solution
 ### 1. 숫자와 연산자 분리
 
 ```csharp
-if (i % 2 == 0)
-{
-    numbers.Add(int.Parse(arr[i]));
-}
-else
-{
-    operators.Add(arr[i]);
-}
+numbers[i] = int.Parse(arr[i * 2]);
+operators[i] = arr[i * 2 + 1];
 ```
 
 `arr`는 숫자와 연산자가 번갈아 나옵니다.
@@ -299,8 +279,7 @@ operators = ["-", "+", "-"]
 ### 2. DP 배열 의미
 
 ```csharp
-int[,] maxDp = new int[n, n];
-int[,] minDp = new int[n, n];
+int[,] maxDp = new int[n, n], minDp = new int[n, n];
 ```
 
 의미는 다음과 같습니다.
@@ -315,8 +294,7 @@ minDp[start, end] = start부터 end까지 만들 수 있는 최솟값
 ### 3. 길이 1 구간 초기화
 
 ```csharp
-maxDp[i, i] = numbers[i];
-minDp[i, i] = numbers[i];
+maxDp[i, i] = minDp[i, i] = numbers[i];
 ```
 
 숫자 하나만 있는 구간은 최댓값과 최솟값이 모두 자기 자신입니다.
@@ -407,13 +385,15 @@ O(n²)
 
 ---
 
-# 🚀 풀이 2. 코드가 짧은 방법 — 배열과 LINQ로 분리하기
+# 🚀 풀이 2. 짧은 코드 버전 — 원본 배열에서 바로 읽기
 
 ## 💡 아이디어
 
 풀이 1과 같은 구간 DP입니다.
 
-다만 숫자와 연산자를 LINQ로 조금 더 간결하게 분리합니다.
+다만 숫자 배열과 연산자 배열을 따로 만들지 않습니다.
+
+숫자는 `arr[i * 2]`, 연산자는 `arr[k * 2 + 1]`에서 바로 읽습니다.
 
 ---
 
@@ -421,32 +401,19 @@ O(n²)
 
 ```csharp
 using System;
-using System.Linq;
 
 public class Solution
 {
     public int solution(string[] arr)
     {
-        int[] nums = arr.Where((_, i) => i % 2 == 0)
-            .Select(int.Parse)
-            .ToArray();
+        int n = arr.Length / 2 + 1;
 
-        string[] ops = arr.Where((_, i) => i % 2 == 1)
-            .ToArray();
-
-        int n = nums.Length;
-
-        int[,] maxDp = new int[n, n];
-        int[,] minDp = new int[n, n];
+        int[,] maxDp = new int[n, n], minDp = new int[n, n];
 
         for (int i = 0; i < n; i++)
-        {
-            maxDp[i, i] = nums[i];
-            minDp[i, i] = nums[i];
-        }
+            maxDp[i, i] = minDp[i, i] = int.Parse(arr[i * 2]);
 
         for (int len = 2; len <= n; len++)
-        {
             for (int s = 0; s + len <= n; s++)
             {
                 int e = s + len - 1;
@@ -456,25 +423,20 @@ public class Solution
 
                 for (int m = s; m < e; m++)
                 {
-                    int maxValue;
-                    int minValue;
+                    string op = arr[m * 2 + 1];
 
-                    if (ops[m] == "+")
-                    {
-                        maxValue = maxDp[s, m] + maxDp[m + 1, e];
-                        minValue = minDp[s, m] + minDp[m + 1, e];
-                    }
-                    else
-                    {
-                        maxValue = maxDp[s, m] - minDp[m + 1, e];
-                        minValue = minDp[s, m] - maxDp[m + 1, e];
-                    }
+                    int maxValue = op == "+"
+                        ? maxDp[s, m] + maxDp[m + 1, e]
+                        : maxDp[s, m] - minDp[m + 1, e];
+
+                    int minValue = op == "+"
+                        ? minDp[s, m] + minDp[m + 1, e]
+                        : minDp[s, m] - maxDp[m + 1, e];
 
                     maxDp[s, e] = Math.Max(maxDp[s, e], maxValue);
                     minDp[s, e] = Math.Min(minDp[s, e], minValue);
                 }
             }
-        }
 
         return maxDp[0, n - 1];
     }
@@ -485,26 +447,23 @@ public class Solution
 
 ## ✨ 코드 의미
 
-### 1. 숫자만 추출
+### 1. 숫자 위치
 
 ```csharp
-int[] nums = arr.Where((_, i) => i % 2 == 0)
-    .Select(int.Parse)
-    .ToArray();
+int.Parse(arr[i * 2])
 ```
 
-짝수 인덱스에 있는 숫자 문자열만 가져와 정수 배열로 바꿉니다.
+숫자는 항상 짝수 인덱스에 있습니다.
 
 ---
 
-### 2. 연산자만 추출
+### 2. 연산자 위치
 
 ```csharp
-string[] ops = arr.Where((_, i) => i % 2 == 1)
-    .ToArray();
+arr[m * 2 + 1]
 ```
 
-홀수 인덱스에 있는 연산자만 가져옵니다.
+`m`번째 숫자와 `m + 1`번째 숫자 사이의 연산자입니다.
 
 ---
 
@@ -518,13 +477,9 @@ string[] ops = arr.Where((_, i) => i % 2 == 1)
 
 ## ⚠️ 프로그래머스에서 실행할 때 주의
 
-LINQ를 사용하므로 다음 네임스페이스가 필요합니다.
+짧은 버전은 `arr`에서 숫자와 연산자를 직접 읽습니다.
 
-```csharp
-using System.Linq;
-```
-
-다만 DP 계산 자체는 반복문으로 작성하는 것이 가장 명확합니다. 🌱
+인덱스 공식만 기억하면 별도 배열을 만들지 않아도 됩니다. 🌱
 
 ---
 
@@ -610,8 +565,8 @@ DP는 다음 구간들을 계산합니다.
 
 | 풀이 | 핵심 방법 | 장점 | 시간 복잡도 | 공간 복잡도 |
 |---|---|---|---:|---:|
-| 풀이 1 | List 분리 + 구간 DP | 원리가 잘 보인다 😊 | O(n³) | O(n²) |
-| 풀이 2 | LINQ 분리 + 구간 DP | 코드가 조금 짧다 🚀 | O(n³) | O(n²) |
+| 풀이 1 | 배열 분리 + 구간 DP | 원리가 잘 보인다 😊 | O(n³) | O(n²) |
+| 풀이 2 | 원본 배열 직접 접근 + 구간 DP | 제출 코드가 짧다 🚀 | O(n³) | O(n²) |
 
 ---
 
@@ -627,9 +582,9 @@ DP는 다음 구간들을 계산합니다.
 3. 구간 DP 흐름을 이해하기 좋습니다.
 ```
 
-LINQ에 익숙하다면 **풀이 2번**도 좋습니다.
+프로그래머스 제출용으로는 **풀이 2번**도 좋습니다.
 
-다만 이 문제의 핵심은 LINQ가 아니라:
+다만 이 문제의 핵심은 인덱스 줄이기가 아니라:
 
 ```text
 최댓값과 최솟값을 함께 저장하는 구간 DP

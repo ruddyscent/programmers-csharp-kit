@@ -161,7 +161,6 @@ arr = [4, 4, 4, 3, 3]
 ## 💻 C# 코드
 
 ```csharp
-using System;
 using System.Collections.Generic;
 
 public class Solution
@@ -173,9 +172,7 @@ public class Solution
         foreach (int number in arr)
         {
             if (answer.Count == 0 || answer[answer.Count - 1] != number)
-            {
                 answer.Add(number);
-            }
         }
 
         return answer.ToArray();
@@ -267,7 +264,7 @@ O(n)
 
 입니다.
 
-# 🚀 풀이 2. 코드가 짧은 방법 — LINQ Where 사용하기
+# 🚀 풀이 2. 짧은 코드 버전 — LINQ Where 사용하기
 
 ## 💡 아이디어
 
@@ -289,7 +286,6 @@ i == 0 이거나 arr[i] != arr[i - 1]
 ## 💻 C# 코드
 
 ```csharp
-using System;
 using System.Linq;
 
 public class Solution

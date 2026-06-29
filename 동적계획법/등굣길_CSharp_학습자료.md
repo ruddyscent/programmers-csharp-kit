@@ -187,16 +187,10 @@ public class Solution
         const int MOD = 1000000007;
 
         bool[,] blocked = new bool[n + 1, m + 1];
+        int[,] dp = new int[n + 1, m + 1];
 
         for (int i = 0; i < puddles.GetLength(0); i++)
-        {
-            int x = puddles[i, 0];
-            int y = puddles[i, 1];
-
-            blocked[y, x] = true;
-        }
-
-        int[,] dp = new int[n + 1, m + 1];
+            blocked[puddles[i, 1], puddles[i, 0]] = true;
 
         dp[1, 1] = 1;
 
@@ -204,16 +198,8 @@ public class Solution
         {
             for (int x = 1; x <= m; x++)
             {
-                if (x == 1 && y == 1)
-                {
+                if ((x == 1 && y == 1) || blocked[y, x])
                     continue;
-                }
-
-                if (blocked[y, x])
-                {
-                    dp[y, x] = 0;
-                    continue;
-                }
 
                 dp[y, x] = (dp[y - 1, x] + dp[y, x - 1]) % MOD;
             }
@@ -253,10 +239,7 @@ bool[,] blocked = new bool[n + 1, m + 1];
 ### 3. 물웅덩이 표시
 
 ```csharp
-int x = puddles[i, 0];
-int y = puddles[i, 1];
-
-blocked[y, x] = true;
+blocked[puddles[i, 1], puddles[i, 0]] = true;
 ```
 
 문제의 좌표는 `[x, y]`입니다.
@@ -280,10 +263,8 @@ dp[1, 1] = 1;
 ### 5. 시작점은 건너뛰기
 
 ```csharp
-if (x == 1 && y == 1)
-{
+if ((x == 1 && y == 1) || blocked[y, x])
     continue;
-}
 ```
 
 시작점 값을 이미 1로 설정했으므로 다시 계산하지 않습니다.
@@ -293,14 +274,13 @@ if (x == 1 && y == 1)
 ### 6. 물웅덩이는 경로 수 0
 
 ```csharp
-if (blocked[y, x])
-{
-    dp[y, x] = 0;
+if ((x == 1 && y == 1) || blocked[y, x])
     continue;
-}
 ```
 
-물웅덩이는 지나갈 수 없으므로 해당 칸까지 오는 경로 수는 0입니다. 🌧️
+물웅덩이는 지나갈 수 없으므로 계산하지 않습니다.
+
+`dp`의 기본값이 0이라서 그대로 두면 됩니다. 🌧️
 
 ---
 
@@ -340,18 +320,19 @@ O(n × m)
 
 ---
 
-# 🚀 풀이 2. 코드가 짧은 방법 — dp 배열 하나만 사용하기
+# 🚀 풀이 2. 짧은 코드 버전 — 1차원 DP 사용하기
 
 ## 💡 아이디어
 
-물웅덩이 정보를 별도 `blocked` 배열로 만들지 않고, `dp` 배열에 `-1`로 표시할 수 있습니다.
+경로 수 배열은 한 행 전체를 들고 있을 필요가 없습니다.
 
 ```text
--1 → 물웅덩이
-0 이상 → 경로 수
+dp[x] = 현재 행에서 x 위치까지 오는 방법 수
 ```
 
-그다음 계산할 때 물웅덩이면 0으로 바꿔서 지나갈 수 없게 처리합니다.
+위쪽 값은 갱신 전의 `dp[x]`, 왼쪽 값은 `dp[x - 1]`입니다.
+
+물웅덩이는 빠르게 확인하기 위해 `blocked[y, x]`에 표시합니다. 🌧️
 
 ---
 
@@ -366,35 +347,19 @@ public class Solution
     {
         const int MOD = 1000000007;
 
-        int[,] dp = new int[n + 1, m + 1];
+        bool[,] blocked = new bool[n + 1, m + 1];
+        int[] dp = new int[m + 1];
 
         for (int i = 0; i < puddles.GetLength(0); i++)
-        {
-            dp[puddles[i, 1], puddles[i, 0]] = -1;
-        }
+            blocked[puddles[i, 1], puddles[i, 0]] = true;
 
-        dp[1, 1] = 1;
+        dp[1] = 1;
 
         for (int y = 1; y <= n; y++)
-        {
             for (int x = 1; x <= m; x++)
-            {
-                if (x == 1 && y == 1)
-                {
-                    continue;
-                }
+                dp[x] = blocked[y, x] ? 0 : (dp[x] + dp[x - 1]) % MOD;
 
-                if (dp[y, x] == -1)
-                {
-                    dp[y, x] = 0;
-                    continue;
-                }
-
-                dp[y, x] = (dp[y - 1, x] + dp[y, x - 1]) % MOD;
-            }
-        }
-
-        return dp[n, m];
+        return dp[m];
     }
 }
 ```
@@ -403,37 +368,33 @@ public class Solution
 
 ## ✨ 코드 의미
 
-### 1. 물웅덩이를 -1로 표시
+### 1. 물웅덩이 표시
 
 ```csharp
-dp[puddles[i, 1], puddles[i, 0]] = -1;
+blocked[puddles[i, 1], puddles[i, 0]] = true;
 ```
 
 물웅덩이 좌표는 `[x, y]`이므로 배열에는 `[y, x]`로 넣습니다.
 
 ---
 
-### 2. 계산 중 물웅덩이 만나면 0으로 변경
+### 2. 물웅덩이면 경로 수 0
 
 ```csharp
-if (dp[y, x] == -1)
-{
-    dp[y, x] = 0;
-    continue;
-}
+dp[x] = blocked[y, x] ? 0 : (dp[x] + dp[x - 1]) % MOD;
 ```
 
 물웅덩이는 지나갈 수 없으므로 경로 수를 0으로 만듭니다.
 
 ---
 
-### 3. 나머지는 동일
+### 3. 위쪽과 왼쪽 값 더하기
 
 ```csharp
-dp[y, x] = (dp[y - 1, x] + dp[y, x - 1]) % MOD;
+dp[x] + dp[x - 1]
 ```
 
-위쪽과 왼쪽 경로 수를 더합니다.
+`dp[x]`는 위쪽에서 내려온 값, `dp[x - 1]`은 왼쪽에서 온 값입니다.
 
 ---
 
@@ -461,7 +422,7 @@ O(n × m)
 
 ## 📦 공간 복잡도
 
-`dp` 배열 하나만 사용합니다.
+`blocked` 배열과 1차원 `dp` 배열을 사용합니다.
 
 ```text
 O(n × m)
@@ -469,19 +430,7 @@ O(n × m)
 
 입니다.
 
-풀이 1보다 배열 하나를 덜 사용합니다. ⚡
-
----
-
-# 💡 참고: 1차원 DP도 가능할까?
-
-가능합니다.
-
-`dp[x]`를 현재 행에서 x 위치까지 오는 방법 수로 관리하면 됩니다.
-
-하지만 처음 공부할 때는 2차원 DP가 훨씬 이해하기 쉽습니다.
-
-이 문제는 좌표 실수가 자주 나므로, 먼저 2차원 DP로 확실히 이해하는 것을 추천합니다. 😊
+경로 수 DP는 `O(m)`만 쓰지만, 물웅덩이 확인용 배열이 `O(n × m)`입니다.
 
 ---
 
@@ -490,7 +439,7 @@ O(n × m)
 | 풀이 | 핵심 방법 | 장점 | 시간 복잡도 | 공간 복잡도 |
 |---|---|---|---:|---:|
 | 풀이 1 | `blocked` + `dp` 배열 | 의미가 명확하다 😊 | O(n × m) | O(n × m) |
-| 풀이 2 | `dp`에 물웅덩이 표시 | 코드가 짧고 배열이 하나 적다 🚀 | O(n × m) | O(n × m) |
+| 풀이 2 | 1차원 `dp` + `blocked` | 제출 코드가 짧고 갱신식이 간결하다 🚀 | O(n × m) | O(n × m) |
 
 ---
 

@@ -196,8 +196,7 @@ public class Solution
 {
     public int solution(int[,] sizes)
     {
-        int maxWidth = 0;
-        int maxHeight = 0;
+        int maxWidth = 0, maxHeight = 0;
 
         for (int i = 0; i < sizes.GetLength(0); i++)
         {
@@ -286,7 +285,7 @@ O(1)
 
 입니다.
 
-# 🚀 풀이 2. 코드가 짧은 방법 — LINQ 사용하기
+# 🚀 풀이 2. 짧은 코드 버전 — LINQ 사용하기
 
 ## 💡 아이디어
 

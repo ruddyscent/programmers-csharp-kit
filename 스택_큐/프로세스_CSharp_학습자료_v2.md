@@ -130,7 +130,6 @@ return 5
 ## 💻 C# 코드
 
 ```csharp
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -141,9 +140,7 @@ public class Solution
         Queue<(int priority, int index)> queue = new Queue<(int priority, int index)>();
 
         for (int i = 0; i < priorities.Length; i++)
-        {
             queue.Enqueue((priorities[i], i));
-        }
 
         int order = 0;
 
@@ -151,20 +148,14 @@ public class Solution
         {
             var current = queue.Dequeue();
 
-            bool hasHigherPriority = queue.Any(process => process.priority > current.priority);
-
-            if (hasHigherPriority)
-            {
+            if (queue.Any(process => process.priority > current.priority))
                 queue.Enqueue(current);
-            }
             else
             {
                 order++;
 
                 if (current.index == location)
-                {
                     return order;
-                }
             }
         }
 
@@ -208,7 +199,7 @@ var current = queue.Dequeue();
 ### 3. 더 높은 우선순위가 있는지 확인
 
 ```csharp
-bool hasHigherPriority = queue.Any(process => process.priority > current.priority);
+queue.Any(process => process.priority > current.priority)
 ```
 
 Queue 안에 현재 프로세스보다 우선순위가 높은 프로세스가 있는지 확인합니다.
@@ -272,18 +263,18 @@ O(n)
 
 입니다.
 
-# 🚀 풀이 2. 코드가 짧은 방법 — LINQ Select와 Max 사용하기
+# 🚀 풀이 2. 짧은 코드 버전 — LINQ Select와 Any 사용하기
 
 ## 💡 아이디어
 
 풀이 1과 같은 방식입니다.
 
-다만 Queue를 만들 때 LINQ `Select`를 사용하고, 더 높은 우선순위 확인에는 `Max`를 사용합니다.
+다만 Queue를 만들 때 LINQ `Select`를 사용하고, 더 높은 우선순위 확인에는 `Any`를 사용합니다.
 
-현재 프로세스보다 Queue 안의 최대 우선순위가 크면 다시 뒤로 보냅니다.
+현재 프로세스보다 우선순위가 높은 프로세스가 하나라도 있으면 다시 뒤로 보냅니다.
 
 ```text
-current.priority < queue.Max(x => x.priority)
+queue.Any(x => x.priority > current.priority)
 ```
 
 이면 아직 실행할 수 없습니다.
@@ -291,7 +282,6 @@ current.priority < queue.Max(x => x.priority)
 ## 💻 C# 코드
 
 ```csharp
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -309,18 +299,12 @@ public class Solution
         {
             var current = queue.Dequeue();
 
-            if (queue.Count > 0 && current.priority < queue.Max(x => x.priority))
-            {
+            if (queue.Any(x => x.priority > current.priority))
                 queue.Enqueue(current);
-                continue;
-            }
-
-            answer++;
-
-            if (current.index == location)
-            {
-                return answer;
-            }
+            else if (current.index == location)
+                return ++answer;
+            else
+                answer++;
         }
     }
 }
@@ -352,19 +336,18 @@ priorities.Select((priority, index) => (priority, index))
 (2, 0), (1, 1), (3, 2), (2, 3)
 ```
 
-### 2. Queue 안의 최대 우선순위 확인
+### 2. 더 높은 우선순위 확인
 
 ```csharp
-queue.Max(x => x.priority)
+queue.Any(x => x.priority > current.priority)
 ```
 
-Queue에 남아 있는 프로세스 중 가장 높은 우선순위를 구합니다.
+Queue에 현재 프로세스보다 우선순위가 높은 프로세스가 있는지 확인합니다.
 
-현재 프로세스의 우선순위가 이것보다 작으면 뒤로 보냅니다.
+있으면 뒤로 보냅니다.
 
 ```csharp
 queue.Enqueue(current);
-continue;
 ```
 
 🔁
@@ -380,10 +363,7 @@ answer++;
 ### 4. 찾는 프로세스인지 확인
 
 ```csharp
-if (current.index == location)
-{
-    return answer;
-}
+return ++answer;
 ```
 
 원래 위치가 `location`과 같으면 정답을 반환합니다.
@@ -400,7 +380,7 @@ using System.Linq;
 
 ## ⏱️ 시간 복잡도
 
-`Max()`가 Queue를 한 번 훑습니다.
+`Any()`가 Queue를 한 번 훑을 수 있습니다.
 
 이 작업이 여러 번 반복될 수 있으므로 전체 시간 복잡도는:
 
@@ -427,7 +407,7 @@ O(n)
 | 풀이 | 핵심 방법 | 장점 | 시간 복잡도 | 공간 복잡도 |
 |---|---|---|---:|---:|
 | 풀이 1 | Queue + Any | 흐름이 직관적이다 😊 | O(n²) | O(n) |
-| 풀이 2 | Queue + Select + Max | 코드가 짧다 🚀 | O(n²) | O(n) |
+| 풀이 2 | Queue + Select + Any | 코드가 짧다 🚀 | O(n²) | O(n) |
 
 # 🏆 추천 풀이
 
@@ -443,7 +423,7 @@ O(n)
 
 LINQ에 익숙하다면 **풀이 2번**도 좋습니다.
 
-다만 `Select`, `Max` 문법이 익숙하지 않다면 처음에는 조금 어렵게 느껴질 수 있습니다. 🌱
+다만 `Select`, `Any` 문법이 익숙하지 않다면 처음에는 조금 어렵게 느껴질 수 있습니다. 🌱
 
 # ✅ 최종 정리
 

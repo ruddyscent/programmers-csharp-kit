@@ -181,7 +181,6 @@ return false
 ## 💻 C# 코드
 
 ```csharp
-using System;
 using System.Collections.Generic;
 
 public class Solution
@@ -199,9 +198,7 @@ public class Solution
             else
             {
                 if (stack.Count == 0)
-                {
                     return false;
-                }
 
                 stack.Pop();
             }
@@ -299,7 +296,7 @@ O(n)
 
 ---
 
-# 🚀 풀이 2. 코드가 짧은 방법 — 카운터 하나로 풀기
+# 🚀 풀이 2. 짧은 코드 버전 — 카운터 하나로 풀기
 
 ## 💡 아이디어
 
@@ -323,8 +320,6 @@ O(n)
 ## 💻 C# 코드
 
 ```csharp
-using System;
-
 public class Solution
 {
     public bool solution(string s)
@@ -336,9 +331,7 @@ public class Solution
             count += ch == '(' ? 1 : -1;
 
             if (count < 0)
-            {
                 return false;
-            }
         }
 
         return count == 0;

@@ -204,7 +204,6 @@ k = 0
 ## 💻 C# 코드
 
 ```csharp
-using System;
 using System.Collections.Generic;
 
 public class Solution
@@ -216,9 +215,7 @@ public class Solution
 
         foreach (char digit in number)
         {
-            while (removeCount > 0 &&
-                   result.Count > 0 &&
-                   result[result.Count - 1] < digit)
+            while (removeCount > 0 && result.Count > 0 && result[result.Count - 1] < digit)
             {
                 result.RemoveAt(result.Count - 1);
                 removeCount--;
@@ -227,11 +224,7 @@ public class Solution
             result.Add(digit);
         }
 
-        while (removeCount > 0)
-        {
-            result.RemoveAt(result.Count - 1);
-            removeCount--;
-        }
+        result.RemoveRange(result.Count - removeCount, removeCount);
 
         return new string(result.ToArray());
     }
@@ -308,11 +301,7 @@ result.Add(digit);
 ### 6. 제거 횟수가 남은 경우
 
 ```csharp
-while (removeCount > 0)
-{
-    result.RemoveAt(result.Count - 1);
-    removeCount--;
-}
+result.RemoveRange(result.Count - removeCount, removeCount);
 ```
 
 예를 들어 숫자가 내림차순이면 앞 숫자를 제거할 기회가 없습니다.
@@ -353,7 +342,7 @@ O(n)
 
 ---
 
-# 🚀 풀이 2. 코드가 짧고 빠른 방법 — char 배열을 스택처럼 사용하기
+# 🚀 풀이 2. 짧은 코드 버전 — char 배열을 스택처럼 사용하기
 
 ## 💡 아이디어
 
@@ -370,15 +359,12 @@ stack[0..top-1]이 현재 결과
 ## 💻 C# 코드
 
 ```csharp
-using System;
-
 public class Solution
 {
     public string solution(string number, int k)
     {
-        int keepLength = number.Length - k;
+        int keepLength = number.Length - k, top = 0;
         char[] stack = new char[number.Length];
-        int top = 0;
 
         foreach (char digit in number)
         {
@@ -579,7 +565,7 @@ LINQ는 이런 스택형 그리디 문제에는 잘 맞지 않습니다.
 3. 디버깅하기 쉽습니다.
 ```
 
-프로그래머스 제출용으로는 **풀이 2번 char 배열 방식**을 추천합니다.
+코딩 테스트 제출용으로 코드 길이와 성능을 함께 생각하면 **풀이 2번 char 배열 방식**을 추천합니다.
 
 `number` 길이가 최대 1,000,000이라 더 안정적입니다. ⚡
 

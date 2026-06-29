@@ -82,47 +82,42 @@ public class Solution
 {
     public int solution(int[,] maps)
     {
-        int rowCount = maps.GetLength(0);
-        int colCount = maps.GetLength(1);
-
+        int n = maps.GetLength(0);
+        int m = maps.GetLength(1);
         int[] dr = { -1, 1, 0, 0 };
         int[] dc = { 0, 0, -1, 1 };
+        bool[,] visited = new bool[n, m];
+        Queue<(int r, int c, int d)> queue = new Queue<(int r, int c, int d)>();
 
-        bool[,] visited = new bool[rowCount, colCount];
-        Queue<int[]> queue = new Queue<int[]>();
-
-        queue.Enqueue(new int[] { 0, 0, 1 });
+        queue.Enqueue((0, 0, 1));
         visited[0, 0] = true;
 
         while (queue.Count > 0)
         {
-            int[] current = queue.Dequeue();
-            int row = current[0];
-            int col = current[1];
-            int distance = current[2];
+            var now = queue.Dequeue();
 
-            if (row == rowCount - 1 && col == colCount - 1)
+            if (now.r == n - 1 && now.c == m - 1)
             {
-                return distance;
+                return now.d;
             }
 
             for (int i = 0; i < 4; i++)
             {
-                int nextRow = row + dr[i];
-                int nextCol = col + dc[i];
+                int nr = now.r + dr[i];
+                int nc = now.c + dc[i];
 
-                if (nextRow < 0 || nextRow >= rowCount || nextCol < 0 || nextCol >= colCount)
+                if (nr < 0 || nr >= n || nc < 0 || nc >= m)
                 {
                     continue;
                 }
 
-                if (maps[nextRow, nextCol] == 0 || visited[nextRow, nextCol])
+                if (maps[nr, nc] == 0 || visited[nr, nc])
                 {
                     continue;
                 }
 
-                visited[nextRow, nextCol] = true;
-                queue.Enqueue(new int[] { nextRow, nextCol, distance + 1 });
+                visited[nr, nc] = true;
+                queue.Enqueue((nr, nc, now.d + 1));
             }
         }
 
@@ -138,8 +133,8 @@ public class Solution
 ### 1. 맵 크기 구하기
 
 ```csharp
-int rowCount = maps.GetLength(0);
-int colCount = maps.GetLength(1);
+int n = maps.GetLength(0);
+int m = maps.GetLength(1);
 ```
 
 `maps`는 2차원 배열입니다.
@@ -171,7 +166,7 @@ int[] dc = { 0, 0, -1, 1 };
 ### 3. 시작점 넣기
 
 ```csharp
-queue.Enqueue(new int[] { 0, 0, 1 });
+queue.Enqueue((0, 0, 1));
 visited[0, 0] = true;
 ```
 
@@ -184,9 +179,9 @@ visited[0, 0] = true;
 ### 4. 도착하면 바로 반환
 
 ```csharp
-if (row == rowCount - 1 && col == colCount - 1)
+if (now.r == n - 1 && now.c == m - 1)
 {
-    return distance;
+    return now.d;
 }
 ```
 
@@ -199,7 +194,7 @@ BFS는 가까운 칸부터 탐색합니다.
 ### 5. 이동할 수 있는 칸만 큐에 넣기
 
 ```csharp
-if (maps[nextRow, nextCol] == 0 || visited[nextRow, nextCol])
+if (maps[nr, nc] == 0 || visited[nr, nc])
 {
     continue;
 }
@@ -260,45 +255,38 @@ public class Solution
     {
         int n = maps.GetLength(0);
         int m = maps.GetLength(1);
-
         int[] dr = { -1, 1, 0, 0 };
         int[] dc = { 0, 0, -1, 1 };
+        Queue<(int r, int c)> queue = new Queue<(int r, int c)>();
 
-        Queue<int[]> queue = new Queue<int[]>();
-        queue.Enqueue(new int[] { 0, 0 });
+        queue.Enqueue((0, 0));
+        maps[0, 0] = 2;
 
         while (queue.Count > 0)
         {
-            int[] current = queue.Dequeue();
-            int row = current[0];
-            int col = current[1];
+            var now = queue.Dequeue();
 
             for (int i = 0; i < 4; i++)
             {
-                int nextRow = row + dr[i];
-                int nextCol = col + dc[i];
+                int nr = now.r + dr[i];
+                int nc = now.c + dc[i];
 
-                if (nextRow < 0 || nextRow >= n || nextCol < 0 || nextCol >= m)
+                if (nr < 0 || nr >= n || nc < 0 || nc >= m)
                 {
                     continue;
                 }
 
-                if (nextRow == 0 && nextCol == 0)
+                if (maps[nr, nc] != 1)
                 {
                     continue;
                 }
 
-                if (maps[nextRow, nextCol] != 1)
-                {
-                    continue;
-                }
-
-                maps[nextRow, nextCol] = maps[row, col] + 1;
-                queue.Enqueue(new int[] { nextRow, nextCol });
+                maps[nr, nc] = maps[now.r, now.c] + 1;
+                queue.Enqueue((nr, nc));
             }
         }
 
-        return maps[n - 1, m - 1] <= 1 ? -1 : maps[n - 1, m - 1];
+        return maps[n - 1, m - 1] < 2 ? -1 : maps[n - 1, m - 1] - 1;
     }
 }
 ```
@@ -310,7 +298,7 @@ public class Solution
 ### 1. 방문 여부를 maps 값으로 판단
 
 ```csharp
-if (maps[nextRow, nextCol] != 1)
+if (maps[nr, nc] != 1)
 {
     continue;
 }
@@ -324,27 +312,24 @@ if (maps[nextRow, nextCol] != 1)
 
 ---
 
-### 2. 시작점 재방문 막기
+### 2. 시작점 방문 처리
 
 ```csharp
-if (nextRow == 0 && nextCol == 0)
-{
-    continue;
-}
+maps[0, 0] = 2;
 ```
 
 시작점도 값이 `1`입니다.
 
-그냥 두면 주변 칸에서 다시 시작점으로 돌아올 수 있습니다.
+그래서 시작점을 먼저 `2`로 바꿔 방문 처리합니다.
 
-그래서 시작점은 따로 건너뜁니다.
+거리 값이 원래보다 1 크게 저장되므로, 마지막에 1을 빼서 반환합니다.
 
 ---
 
 ### 3. 다음 칸에 거리 저장
 
 ```csharp
-maps[nextRow, nextCol] = maps[row, col] + 1;
+maps[nr, nc] = maps[now.r, now.c] + 1;
 ```
 
 현재 칸까지의 최단거리에 1을 더해 다음 칸의 거리로 저장합니다.
@@ -356,14 +341,14 @@ BFS이므로 처음 저장되는 값이 최단거리입니다.
 ### 4. 도착할 수 없는 경우
 
 ```csharp
-return maps[n - 1, m - 1] <= 1 ? -1 : maps[n - 1, m - 1];
+return maps[n - 1, m - 1] < 2 ? -1 : maps[n - 1, m - 1] - 1;
 ```
 
-도착 칸이 끝까지 `1`이라면 방문하지 못했다는 뜻입니다.
+도착 칸이 끝까지 `0` 또는 `1`이라면 방문하지 못했다는 뜻입니다.
 
 도착 칸이 `0`인 경우도 갈 수 없는 칸이므로 `-1`을 반환합니다.
 
-이 문제에서는 맵 크기가 `1 x 1`인 경우가 주어지지 않으므로, 도착 칸이 그대로 `1`이면 `-1`을 반환해도 괜찮습니다.
+방문했다면 시작점을 `2`로 두고 계산했기 때문에 마지막에 `1`을 빼서 원래 거리로 돌립니다.
 
 ---
 

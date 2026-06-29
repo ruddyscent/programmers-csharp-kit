@@ -119,16 +119,14 @@ word = "AAAE"
 
 1. DFS로 만들 수 있는 모든 단어를 만듭니다.
 2. 만든 단어들을 리스트에 저장합니다.
-3. 사전순으로 정렬합니다.
-4. `word`의 위치를 찾습니다.
-5. 인덱스는 0부터 시작하므로 `+1`을 해서 반환합니다.
+3. DFS 생성 순서가 이미 사전순이므로 바로 `word`의 위치를 찾습니다.
+4. 인덱스는 0부터 시작하므로 `+1`을 해서 반환합니다.
 
 ---
 
 ## 💻 C# 코드
 
 ```csharp
-using System;
 using System.Collections.Generic;
 
 public class Solution
@@ -140,27 +138,19 @@ public class Solution
     {
         MakeWords("");
 
-        words.Sort();
-
         return words.IndexOf(word) + 1;
     }
 
     private void MakeWords(string current)
     {
         if (current.Length > 0)
-        {
             words.Add(current);
-        }
 
         if (current.Length == 5)
-        {
             return;
-        }
 
         foreach (char vowel in vowels)
-        {
             MakeWords(current + vowel);
-        }
     }
 }
 ```
@@ -203,9 +193,7 @@ MakeWords("");
 
 ```csharp
 if (current.Length > 0)
-{
     words.Add(current);
-}
 ```
 
 빈 문자열은 사전에 들어가지 않습니다.
@@ -218,9 +206,7 @@ if (current.Length > 0)
 
 ```csharp
 if (current.Length == 5)
-{
     return;
-}
 ```
 
 문제에서 단어 길이는 최대 5입니다.
@@ -231,20 +217,16 @@ if (current.Length == 5)
 
 ```csharp
 foreach (char vowel in vowels)
-{
     MakeWords(current + vowel);
-}
 ```
 
 현재 단어 뒤에 `A`, `E`, `I`, `O`, `U`를 각각 붙여 봅니다. 🔁
 
 ---
 
-### 7. 정렬 후 위치 찾기
+### 7. 위치 찾기
 
 ```csharp
-words.Sort();
-
 return words.IndexOf(word) + 1;
 ```
 
@@ -252,24 +234,18 @@ return words.IndexOf(word) + 1;
 
 문제에서는 첫 번째 단어가 1번이므로 `+1`을 합니다.
 
+DFS가 `A`, `E`, `I`, `O`, `U` 순서로 진행되므로 `words`는 이미 사전 순서입니다. ✅
+
 ---
 
 ## ⏱️ 시간 복잡도
 
 만들 수 있는 단어 수는 최대 3905개입니다.
 
-정렬 비용은:
-
-```text
-O(3905 log 3905)
-```
-
-입니다.
-
 일반화하면 단어 개수를 `N`이라 할 때:
 
 ```text
-O(N log N)
+O(N)
 ```
 
 입니다.
@@ -290,7 +266,7 @@ O(N)
 
 ---
 
-# 🚀 풀이 2. 코드가 짧고 빠른 방법 — 자리별 가중치 공식
+# 🚀 풀이 2. 짧은 코드 버전 — 자리별 가중치 공식
 
 ## 💡 아이디어
 
@@ -382,8 +358,6 @@ AUUUU
 ## 💻 C# 코드
 
 ```csharp
-using System;
-
 public class Solution
 {
     public int solution(string word)
@@ -539,39 +513,12 @@ I = 2
 
 ---
 
-# ✨ LINQ 스타일 짧은 풀이
-
-LINQ를 적극적으로 쓰면 다음처럼 작성할 수도 있습니다.
-
-```csharp
-using System;
-using System.Linq;
-
-public class Solution
-{
-    public int solution(string word)
-    {
-        string vowels = "AEIOU";
-        int[] weights = { 781, 156, 31, 6, 1 };
-
-        return word
-            .Select((ch, i) => vowels.IndexOf(ch) * weights[i] + 1)
-            .Sum();
-    }
-}
-```
-
-깔끔하지만, 처음 공부할 때는 반복문 풀이가 더 이해하기 쉽습니다. 🌱
-
----
-
 # ⚖️ 두 풀이 비교
 
 | 풀이 | 핵심 방법 | 장점 | 시간 복잡도 | 공간 복잡도 |
 |---|---|---|---:|---:|
-| 풀이 1 | 모든 단어 생성 + 정렬 | 사전 구조가 잘 보인다 😊 | O(N log N) | O(N) |
+| 풀이 1 | 모든 단어 생성 | 사전 구조가 잘 보인다 😊 | O(N) | O(N) |
 | 풀이 2 | 자리별 가중치 공식 | 빠르고 코드가 짧다 🚀 | O(L) | O(1) |
-| LINQ 참고 | 공식 + Select + Sum | 가장 간결하다 ✨ | O(L) | O(1) |
 
 여기서:
 
@@ -607,7 +554,7 @@ L = word 길이, 최대 5
 이 문제는 두 가지 방식으로 풀 수 있습니다.
 
 ```text
-1. 모든 단어를 만들어 정렬한 뒤 위치 찾기
+1. 모든 단어를 사전순으로 만든 뒤 위치 찾기
 2. 자리별 가중치를 이용해 바로 계산하기
 ```
 

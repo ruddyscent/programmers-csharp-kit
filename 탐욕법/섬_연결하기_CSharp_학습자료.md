@@ -254,66 +254,35 @@ public class Solution
         parent = new int[n];
 
         for (int i = 0; i < n; i++)
-        {
             parent[i] = i;
-        }
 
         int edgeCount = costs.GetLength(0);
-
-        int[][] edges = new int[edgeCount][];
+        var edges = new (int a, int b, int cost)[edgeCount];
 
         for (int i = 0; i < edgeCount; i++)
-        {
-            edges[i] = new int[]
-            {
-                costs[i,0],
-                costs[i,1],
-                costs[i,2]
-            };
-        }
+            edges[i] = (costs[i, 0], costs[i, 1], costs[i, 2]);
 
-        Array.Sort(edges, (a, b) => a[2].CompareTo(b[2]));
+        Array.Sort(edges, (a, b) => a.cost.CompareTo(b.cost));
 
         int answer = 0;
 
         foreach (var edge in edges)
         {
-            int a = edge[0];
-            int b = edge[1];
-            int cost = edge[2];
-
-            if (Find(a) == Find(b))
-            {
+            if (Find(edge.a) == Find(edge.b))
                 continue;
-            }
 
-            Union(a, b);
-            answer += cost;
+            Union(edge.a, edge.b);
+            answer += edge.cost;
         }
 
         return answer;
     }
 
-    private int Find(int x)
-    {
-        if (parent[x] == x)
-        {
-            return x;
-        }
+    private int Find(int x) =>
+        parent[x] == x ? x : parent[x] = Find(parent[x]);
 
-        return parent[x] = Find(parent[x]);
-    }
-
-    private void Union(int a, int b)
-    {
-        a = Find(a);
-        b = Find(b);
-
-        if (a != b)
-        {
-            parent[b] = a;
-        }
-    }
+    private void Union(int a, int b) =>
+        parent[Find(b)] = Find(a);
 }
 ```
 
@@ -344,7 +313,7 @@ parent[i] = i;
 
 ```csharp
 Array.Sort(edges,
-    (a,b) => a[2].CompareTo(b[2]));
+    (a, b) => a.cost.CompareTo(b.cost));
 ```
 
 다리 비용이 작은 순서대로 정렬합니다.
@@ -354,7 +323,7 @@ Array.Sort(edges,
 ## 3. 이미 연결되어 있는지 확인
 
 ```csharp
-if (Find(a) == Find(b))
+if (Find(edge.a) == Find(edge.b))
 ```
 
 대표가 같으면 이미 같은 집합입니다.
@@ -366,7 +335,7 @@ if (Find(a) == Find(b))
 ## 4. 연결
 
 ```csharp
-Union(a, b);
+Union(edge.a, edge.b);
 ```
 
 두 집합을 합칩니다.
@@ -376,7 +345,7 @@ Union(a, b);
 ## 5. 비용 추가
 
 ```csharp
-answer += cost;
+answer += edge.cost;
 ```
 
 선택된 다리의 비용을 더합니다.
@@ -439,7 +408,7 @@ O(n + E)
 
 ---
 
-# 🚀 풀이 2. 코드가 짧은 방법 — LINQ + Kruskal
+# 🚀 풀이 2. 짧은 코드 버전 — LINQ + Kruskal
 
 ## 💡 아이디어
 
@@ -452,7 +421,6 @@ O(n + E)
 ## 💻 C# 코드
 
 ```csharp
-using System;
 using System.Linq;
 
 public class Solution
@@ -461,38 +429,21 @@ public class Solution
     {
         int[] parent = Enumerable.Range(0, n).ToArray();
 
-        int Find(int x)
-        {
-            return parent[x] == x
-                ? x
-                : parent[x] = Find(parent[x]);
-        }
-
-        void Union(int a, int b)
-        {
-            parent[Find(b)] = Find(a);
-        }
+        int Find(int x) => parent[x] == x ? x : parent[x] = Find(parent[x]);
 
         var edges = Enumerable.Range(0, costs.GetLength(0))
-            .Select(i => new
-            {
-                A = costs[i,0],
-                B = costs[i,1],
-                Cost = costs[i,2]
-            })
-            .OrderBy(x => x.Cost);
+            .Select(i => (a: costs[i, 0], b: costs[i, 1], cost: costs[i, 2]))
+            .OrderBy(edge => edge.cost);
 
         int answer = 0;
 
         foreach (var edge in edges)
         {
-            if (Find(edge.A) == Find(edge.B))
-            {
+            if (Find(edge.a) == Find(edge.b))
                 continue;
-            }
 
-            Union(edge.A, edge.B);
-            answer += edge.Cost;
+            parent[Find(edge.b)] = Find(edge.a);
+            answer += edge.cost;
         }
 
         return answer;
@@ -507,7 +458,7 @@ public class Solution
 ## LINQ 정렬
 
 ```csharp
-.OrderBy(x => x.Cost)
+.OrderBy(edge => edge.cost)
 ```
 
 비용이 작은 다리부터 처리합니다.
@@ -525,14 +476,14 @@ Enumerable.Range(0, n)
 
 ---
 
-## 로컬 함수 사용
+## 로컬 함수와 한 줄 연결
 
 ```csharp
-Find(...)
-Union(...)
+int Find(int x) => ...
+parent[Find(edge.b)] = Find(edge.a);
 ```
 
-를 `solution` 안에 넣어 코드 길이를 줄였습니다. 🚀
+`Find`는 `solution` 안의 로컬 함수로 두고, 두 집합을 합치는 코드는 한 줄로 작성했습니다. 🚀
 
 ---
 
@@ -586,7 +537,7 @@ Prim
 3. MST 대표 문제
 ```
 
-코드를 줄이고 싶다면:
+코딩 테스트 제출용으로 코드 길이를 우선한다면:
 
 ```text
 풀이 2

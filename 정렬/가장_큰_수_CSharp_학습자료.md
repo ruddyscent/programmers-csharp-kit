@@ -205,16 +205,12 @@ public class Solution
         string[] nums = new string[numbers.Length];
 
         for (int i = 0; i < numbers.Length; i++)
-        {
             nums[i] = numbers[i].ToString();
-        }
 
         Array.Sort(nums, (a, b) => (b + a).CompareTo(a + b));
 
         if (nums[0] == "0")
-        {
             return "0";
-        }
 
         return string.Concat(nums);
     }
@@ -323,13 +319,11 @@ O(n)
 
 ---
 
-# 🚀 풀이 2. 코드가 짧은 방법 — LINQ 사용하기
+# 🚀 풀이 2. 짧은 코드 버전 — Array.ConvertAll 사용하기
 
 ## 💡 아이디어
 
-LINQ로 숫자를 문자열로 바꾸고, 같은 비교 기준으로 정렬한 뒤 이어 붙입니다.
-
-`OrderByDescending`에 직접 비교자를 넣기는 어렵기 때문에 `Array.Sort`보다는 조금 돌아가야 합니다.
+`Array.ConvertAll`로 숫자를 문자열로 바꾸고, 같은 비교 기준으로 정렬한 뒤 이어 붙입니다.
 
 프로그래머스 제출용으로 안정적인 짧은 코드는 `Array.ConvertAll`과 `Array.Sort`를 함께 쓰는 방식입니다.
 
@@ -384,35 +378,6 @@ return nums[0] == "0" ? "0" : string.Concat(nums);
 ```
 
 모든 숫자가 0이면 `"0"`을 반환하고, 그렇지 않으면 이어 붙인 결과를 반환합니다. ✅
-
----
-
-# ✨ LINQ 스타일 참고 풀이
-
-LINQ를 더 적극적으로 쓰고 싶다면 다음처럼 작성할 수도 있습니다.
-
-```csharp
-using System;
-using System.Linq;
-
-public class Solution
-{
-    public string solution(int[] numbers)
-    {
-        var nums = numbers
-            .Select(x => x.ToString())
-            .ToArray();
-
-        Array.Sort(nums, (a, b) => (b + a).CompareTo(a + b));
-
-        return nums[0] == "0" ? "0" : string.Concat(nums);
-    }
-}
-```
-
-다만 이 문제의 핵심은 `OrderBy`보다 **커스텀 비교 정렬**입니다.
-
-그래서 `Array.Sort`를 함께 쓰는 편이 가장 깔끔합니다. 😊
 
 ---
 

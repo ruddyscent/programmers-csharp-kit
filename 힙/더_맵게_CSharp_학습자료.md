@@ -132,7 +132,6 @@ int min = pq.Dequeue();
 ## 💻 C# 코드
 
 ```csharp
-using System;
 using System.Collections.Generic;
 
 public class Solution
@@ -142,18 +141,14 @@ public class Solution
         PriorityQueue<int, int> pq = new PriorityQueue<int, int>();
 
         foreach (int s in scoville)
-        {
             pq.Enqueue(s, s);
-        }
 
         int answer = 0;
 
         while (pq.Count > 0 && pq.Peek() < K)
         {
             if (pq.Count < 2)
-            {
                 return -1;
-            }
 
             int first = pq.Dequeue();
             int second = pq.Dequeue();
@@ -285,7 +280,7 @@ O(n)
 
 입니다.
 
-# 🚀 풀이 2. 코드가 짧은 방법 — PriorityQueue를 간결하게 쓰기
+# 🚀 풀이 2. 짧은 코드 버전 — PriorityQueue를 간결하게 쓰기
 
 ## 💡 아이디어
 
@@ -298,7 +293,6 @@ O(n)
 ## 💻 C# 코드
 
 ```csharp
-using System;
 using System.Collections.Generic;
 
 public class Solution
@@ -308,9 +302,7 @@ public class Solution
         var pq = new PriorityQueue<int, int>();
 
         foreach (var s in scoville)
-        {
             pq.Enqueue(s, s);
-        }
 
         int count = 0;
 
@@ -426,7 +418,7 @@ O(n² log n)
 3. 최소 힙의 역할을 이해하기 좋습니다.
 ```
 
-프로그래머스 제출용으로는 **풀이 2번**도 좋습니다.
+코딩 테스트 제출용으로 코드 길이를 우선한다면 **풀이 2번**이 더 좋습니다.
 
 다만 `PriorityQueue` 사용법에 익숙하지 않다면 풀이 1번이 더 안전합니다. 🌱
 

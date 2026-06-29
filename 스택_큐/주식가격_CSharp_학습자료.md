@@ -168,8 +168,6 @@ prices = [1, 2, 3, 2, 3]
 ## 💻 C# 코드
 
 ```csharp
-using System;
-
 public class Solution
 {
     public int[] solution(int[] prices)
@@ -184,9 +182,7 @@ public class Solution
                 answer[i]++;
 
                 if (prices[j] < prices[i])
-                {
                     break;
-                }
             }
         }
 
@@ -292,7 +288,7 @@ O(n)
 
 ---
 
-# 🚀 풀이 2. 효율적인 방법 — Stack 사용하기
+# 🚀 풀이 2. 짧은 코드 버전 — Stack 사용하기
 
 ## 💡 아이디어
 
@@ -341,7 +337,6 @@ prices[current] < prices[stack.Peek()]
 ## 💻 C# 코드
 
 ```csharp
-using System;
 using System.Collections.Generic;
 
 public class Solution
@@ -354,6 +349,8 @@ public class Solution
 
         for (int i = 0; i < n; i++)
         {
+            answer[i] = n - 1 - i;
+
             while (stack.Count > 0 && prices[i] < prices[stack.Peek()])
             {
                 int index = stack.Pop();
@@ -361,12 +358,6 @@ public class Solution
             }
 
             stack.Push(i);
-        }
-
-        while (stack.Count > 0)
-        {
-            int index = stack.Pop();
-            answer[index] = n - 1 - index;
         }
 
         return answer;
@@ -388,7 +379,17 @@ Stack<int> stack = new Stack<int>();
 
 ---
 
-### 2. 현재 가격이 더 낮은지 확인
+### 2. 끝까지 떨어지지 않는 경우를 기본값으로 저장
+
+```csharp
+answer[i] = n - 1 - i;
+```
+
+나중에 가격이 떨어진 시점을 찾으면 이 값을 덮어씁니다.
+
+---
+
+### 3. 현재 가격이 더 낮은지 확인
 
 ```csharp
 while (stack.Count > 0 && prices[i] < prices[stack.Peek()])
@@ -399,7 +400,7 @@ Stack 맨 위 시점은 지금 가격이 떨어진 것입니다.
 
 ---
 
-### 3. 떨어진 시간 계산
+### 4. 떨어진 시간 계산
 
 ```csharp
 int index = stack.Pop();
@@ -423,41 +424,13 @@ answer[2] = 3 - 2 = 1
 
 ---
 
-### 4. 현재 인덱스 Stack에 넣기
+### 5. 현재 인덱스 Stack에 넣기
 
 ```csharp
 stack.Push(i);
 ```
 
 현재 시점도 나중에 가격이 떨어지는지 확인해야 하므로 Stack에 넣습니다.
-
----
-
-### 5. 끝까지 가격이 떨어지지 않은 시점 처리
-
-```csharp
-while (stack.Count > 0)
-{
-    int index = stack.Pop();
-    answer[index] = n - 1 - index;
-}
-```
-
-Stack에 남은 인덱스들은 끝까지 가격이 떨어지지 않은 시점입니다.
-
-따라서 마지막 시점까지의 시간을 계산합니다.
-
-```text
-마지막 인덱스 - 현재 인덱스
-```
-
-즉:
-
-```csharp
-n - 1 - index
-```
-
-입니다.
 
 ---
 
@@ -489,67 +462,12 @@ O(n)
 
 ---
 
-# ✨ 풀이 3. 코드가 짧은 LINQ 스타일 참고
-
-이 문제는 누적 상태와 Stack이 필요한 문제라서 LINQ만으로 풀면 오히려 가독성이 떨어집니다.
-
-다만 이해하기 쉬운 이중 반복 풀이를 짧게 쓰면 다음처럼 작성할 수 있습니다.
-
-## 💻 C# 코드
-
-```csharp
-using System;
-using System.Linq;
-
-public class Solution
-{
-    public int[] solution(int[] prices)
-    {
-        return prices
-            .Select((price, i) =>
-            {
-                int count = 0;
-
-                for (int j = i + 1; j < prices.Length; j++)
-                {
-                    count++;
-
-                    if (prices[j] < price)
-                    {
-                        break;
-                    }
-                }
-
-                return count;
-            })
-            .ToArray();
-    }
-}
-```
-
----
-
-## ⚠️ 주의
-
-이 코드는 짧고 읽기 쉽지만, 시간 복잡도는 이중 반복문과 같습니다.
-
-```text
-O(n²)
-```
-
-따라서 입력이 큰 경우에는 Stack 풀이를 추천합니다. 🚨
-
-프로그래머스에서 일부 테스트는 통과할 수 있지만, 효율성까지 고려하면 Stack 풀이가 안전합니다.
-
----
-
 # ⚖️ 풀이 비교
 
 | 풀이 | 핵심 방법 | 장점 | 시간 복잡도 | 공간 복잡도 |
 |---|---|---|---:|---:|
 | 풀이 1 | 이중 반복문 | 가장 이해하기 쉽다 😊 | O(n²) | O(1) |
-| 풀이 2 | Stack | 효율적이고 안전하다 🚀 | O(n) | O(n) |
-| LINQ 참고 | `Select` 사용 | 코드가 짧다 ✨ | O(n²) | O(n) |
+| 풀이 2 | Stack | 짧고 효율적이다 🚀 | O(n) | O(n) |
 
 ---
 

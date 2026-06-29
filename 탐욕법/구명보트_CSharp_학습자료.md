@@ -166,16 +166,12 @@ public class Solution
     {
         Array.Sort(people);
 
-        int left = 0;
-        int right = people.Length - 1;
-        int answer = 0;
+        int left = 0, right = people.Length - 1, answer = 0;
 
         while (left <= right)
         {
             if (people[left] + people[right] <= limit)
-            {
                 left++;
-            }
 
             right--;
             answer++;
@@ -307,7 +303,7 @@ O(1)
 
 ---
 
-# 🚀 풀이 2. 코드가 짧은 방법 — LINQ로 정렬 후 투 포인터
+# 🚀 풀이 2. 짧은 코드 버전 — LINQ로 정렬 후 투 포인터
 
 ## 💡 아이디어
 
@@ -320,7 +316,6 @@ O(1)
 ## 💻 C# 코드
 
 ```csharp
-using System;
 using System.Linq;
 
 public class Solution
@@ -329,16 +324,12 @@ public class Solution
     {
         int[] sorted = people.OrderBy(x => x).ToArray();
 
-        int left = 0;
-        int right = sorted.Length - 1;
-        int boats = 0;
+        int left = 0, right = sorted.Length - 1, boats = 0;
 
         while (left <= right)
         {
             if (sorted[left] + sorted[right] <= limit)
-            {
                 left++;
-            }
 
             right--;
             boats++;
@@ -496,7 +487,7 @@ limit = 100
 
 # 🏆 추천 풀이
 
-프로그래머스 제출용으로는 **풀이 1번 `Array.Sort` 방식**을 추천합니다.
+코딩 테스트 제출용으로 코드 길이와 메모리를 함께 생각하면 **풀이 1번 `Array.Sort` 방식**을 추천합니다.
 
 이유는 다음과 같습니다.
 

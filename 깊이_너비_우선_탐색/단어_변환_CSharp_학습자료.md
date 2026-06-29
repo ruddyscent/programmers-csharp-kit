@@ -100,61 +100,47 @@ public class Solution
     public int solution(string begin, string target, string[] words)
     {
         bool[] visited = new bool[words.Length];
-        Queue<string> wordQueue = new Queue<string>();
-        Queue<int> countQueue = new Queue<int>();
+        Queue<(string word, int count)> queue = new Queue<(string word, int count)>();
 
-        wordQueue.Enqueue(begin);
-        countQueue.Enqueue(0);
+        queue.Enqueue((begin, 0));
 
-        while (wordQueue.Count > 0)
+        while (queue.Count > 0)
         {
-            string current = wordQueue.Dequeue();
-            int count = countQueue.Dequeue();
+            var now = queue.Dequeue();
 
-            if (current == target)
+            if (now.word == target)
             {
-                return count;
+                return now.count;
             }
 
             for (int i = 0; i < words.Length; i++)
             {
-                if (visited[i])
-                {
-                    continue;
-                }
-
-                if (!CanConvert(current, words[i]))
+                if (visited[i] || CountDiff(now.word, words[i]) != 1)
                 {
                     continue;
                 }
 
                 visited[i] = true;
-                wordQueue.Enqueue(words[i]);
-                countQueue.Enqueue(count + 1);
+                queue.Enqueue((words[i], now.count + 1));
             }
         }
 
         return 0;
     }
 
-    private bool CanConvert(string from, string to)
+    private int CountDiff(string a, string b)
     {
-        int differentCount = 0;
+        int count = 0;
 
-        for (int i = 0; i < from.Length; i++)
+        for (int i = 0; i < a.Length; i++)
         {
-            if (from[i] != to[i])
+            if (a[i] != b[i])
             {
-                differentCount++;
-            }
-
-            if (differentCount > 1)
-            {
-                return false;
+                count++;
             }
         }
 
-        return differentCount == 1;
+        return count;
     }
 }
 ```
@@ -166,8 +152,7 @@ public class Solution
 ### 1. 큐에 단어와 변환 횟수 넣기
 
 ```csharp
-Queue<string> wordQueue = new Queue<string>();
-Queue<int> countQueue = new Queue<int>();
+Queue<(string word, int count)> queue = new Queue<(string word, int count)>();
 ```
 
 현재 단어와 현재까지의 변환 횟수를 함께 관리합니다.
@@ -175,8 +160,7 @@ Queue<int> countQueue = new Queue<int>();
 처음에는 아직 변환하지 않았으므로 `begin`의 변환 횟수는 `0`입니다.
 
 ```csharp
-wordQueue.Enqueue(begin);
-countQueue.Enqueue(0);
+queue.Enqueue((begin, 0));
 ```
 
 ---
@@ -184,9 +168,9 @@ countQueue.Enqueue(0);
 ### 2. target을 만나면 바로 반환
 
 ```csharp
-if (current == target)
+if (now.word == target)
 {
-    return count;
+    return now.count;
 }
 ```
 
@@ -199,7 +183,7 @@ BFS는 변환 횟수가 적은 단어부터 확인합니다.
 ### 3. 변환 가능한 단어 찾기
 
 ```csharp
-if (!CanConvert(current, words[i]))
+if (visited[i] || CountDiff(now.word, words[i]) != 1)
 {
     continue;
 }
@@ -214,32 +198,25 @@ if (!CanConvert(current, words[i]))
 ### 4. 한 글자 차이 판정
 
 ```csharp
-private bool CanConvert(string from, string to)
+private int CountDiff(string a, string b)
 {
-    int differentCount = 0;
+    int count = 0;
 
-    for (int i = 0; i < from.Length; i++)
+    for (int i = 0; i < a.Length; i++)
     {
-        if (from[i] != to[i])
+        if (a[i] != b[i])
         {
-            differentCount++;
-        }
-
-        if (differentCount > 1)
-        {
-            return false;
+            count++;
         }
     }
 
-    return differentCount == 1;
+    return count;
 }
 ```
 
 두 단어를 앞에서부터 비교하면서 다른 글자의 개수를 셉니다.
 
-다른 글자가 2개 이상이면 한 번에 변환할 수 없으므로 바로 `false`를 반환합니다.
-
-마지막에 다른 글자가 정확히 1개라면 `true`입니다. 🔍
+다른 글자가 정확히 1개라면 한 번에 변환할 수 있습니다. 🔍
 
 ---
 
@@ -293,8 +270,8 @@ public class Solution
 {
     public int solution(string begin, string target, string[] words)
     {
-        Queue<string> queue = new Queue<string>();
-        Dictionary<string, int> distance = new Dictionary<string, int>();
+        var queue = new Queue<string>();
+        var distance = new Dictionary<string, int>();
 
         queue.Enqueue(begin);
         distance[begin] = 0;
@@ -303,7 +280,7 @@ public class Solution
         {
             string current = queue.Dequeue();
 
-            foreach (string next in words.Where(word => !distance.ContainsKey(word) && IsOneDifferent(current, word)))
+            foreach (string next in words.Where(w => !distance.ContainsKey(w) && OneDiff(current, w)))
             {
                 distance[next] = distance[current] + 1;
 
@@ -319,7 +296,7 @@ public class Solution
         return 0;
     }
 
-    private bool IsOneDifferent(string a, string b)
+    private bool OneDiff(string a, string b)
     {
         return a.Where((ch, i) => ch != b[i]).Count() == 1;
     }
@@ -345,7 +322,7 @@ Dictionary<string, int> distance = new Dictionary<string, int>();
 ### 2. 아직 방문하지 않았고 한 글자만 다른 단어 찾기
 
 ```csharp
-words.Where(word => !distance.ContainsKey(word) && IsOneDifferent(current, word))
+words.Where(w => !distance.ContainsKey(w) && OneDiff(current, w))
 ```
 
 아직 방문하지 않은 단어 중에서 현재 단어와 한 글자만 다른 단어를 고릅니다.

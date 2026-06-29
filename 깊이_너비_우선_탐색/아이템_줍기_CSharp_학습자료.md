@@ -78,12 +78,13 @@ using System.Collections.Generic;
 
 public class Solution
 {
+    int[,] board = new int[102, 102];
+    int[] dx = { -1, 1, 0, 0 };
+    int[] dy = { 0, 0, -1, 1 };
+
     public int solution(int[,] rectangle, int characterX, int characterY, int itemX, int itemY)
     {
-        int[,] board = new int[102, 102];
-        int rectangleCount = rectangle.GetLength(0);
-
-        for (int i = 0; i < rectangleCount; i++)
+        for (int i = 0; i < rectangle.GetLength(0); i++)
         {
             int x1 = rectangle[i, 0] * 2;
             int y1 = rectangle[i, 1] * 2;
@@ -94,9 +95,7 @@ public class Solution
             {
                 for (int y = y1; y <= y2; y++)
                 {
-                    bool isInside = x > x1 && x < x2 && y > y1 && y < y2;
-
-                    if (isInside)
+                    if (x > x1 && x < x2 && y > y1 && y < y2)
                     {
                         board[x, y] = 2;
                     }
@@ -108,49 +107,36 @@ public class Solution
             }
         }
 
-        return Bfs(board, characterX * 2, characterY * 2, itemX * 2, itemY * 2) / 2;
-    }
-
-    private int Bfs(int[,] board, int startX, int startY, int targetX, int targetY)
-    {
-        int[] dx = { -1, 1, 0, 0 };
-        int[] dy = { 0, 0, -1, 1 };
-
-        bool[,] visited = new bool[102, 102];
-        Queue<int[]> queue = new Queue<int[]>();
-
-        queue.Enqueue(new int[] { startX, startY, 0 });
-        visited[startX, startY] = true;
+        var queue = new Queue<(int x, int y, int d)>();
+        queue.Enqueue((characterX * 2, characterY * 2, 0));
+        board[characterX * 2, characterY * 2] = 0;
 
         while (queue.Count > 0)
         {
-            int[] current = queue.Dequeue();
-            int x = current[0];
-            int y = current[1];
-            int distance = current[2];
+            var now = queue.Dequeue();
 
-            if (x == targetX && y == targetY)
+            if (now.x == itemX * 2 && now.y == itemY * 2)
             {
-                return distance;
+                return now.d / 2;
             }
 
             for (int i = 0; i < 4; i++)
             {
-                int nextX = x + dx[i];
-                int nextY = y + dy[i];
+                int nx = now.x + dx[i];
+                int ny = now.y + dy[i];
 
-                if (nextX < 0 || nextX >= 102 || nextY < 0 || nextY >= 102)
+                if (nx < 0 || nx >= 102 || ny < 0 || ny >= 102)
                 {
                     continue;
                 }
 
-                if (visited[nextX, nextY] || board[nextX, nextY] != 1)
+                if (board[nx, ny] != 1)
                 {
                     continue;
                 }
 
-                visited[nextX, nextY] = true;
-                queue.Enqueue(new int[] { nextX, nextY, distance + 1 });
+                board[nx, ny] = 0;
+                queue.Enqueue((nx, ny, now.d + 1));
             }
         }
 
@@ -210,7 +196,7 @@ else if (board[x, y] != 2)
 ### 4. 테두리만 따라 BFS
 
 ```csharp
-if (visited[nextX, nextY] || board[nextX, nextY] != 1)
+if (board[nx, ny] != 1)
 {
     continue;
 }
@@ -225,7 +211,7 @@ if (visited[nextX, nextY] || board[nextX, nextY] != 1)
 ### 5. 거리 나누기
 
 ```csharp
-return Bfs(board, characterX * 2, characterY * 2, itemX * 2, itemY * 2) / 2;
+return now.d / 2;
 ```
 
 좌표를 2배로 키웠기 때문에 이동 거리도 2배가 됩니다.
@@ -252,7 +238,9 @@ BFS는 격자의 각 칸을 최대 한 번 방문하므로 `O(C^2)`입니다.
 
 공간 복잡도: `O(C^2)`
 
-지형 배열 `board`, 방문 배열 `visited`, BFS 큐가 격자 크기에 비례하는 공간을 사용합니다.
+지형 배열 `board`와 BFS 큐가 격자 크기에 비례하는 공간을 사용합니다.
+
+방문한 테두리는 `board` 값을 `0`으로 바꿔 처리하므로 별도의 방문 배열은 만들지 않습니다.
 
 ---
 
@@ -283,79 +271,68 @@ public class Solution
     public int solution(int[,] rectangle, int characterX, int characterY, int itemX, int itemY)
     {
         bool[,] border = new bool[102, 102];
-        int count = rectangle.GetLength(0);
 
-        for (int i = 0; i < count; i++)
+        for (int step = 0; step < 2; step++)
         {
-            int x1 = rectangle[i, 0] * 2;
-            int y1 = rectangle[i, 1] * 2;
-            int x2 = rectangle[i, 2] * 2;
-            int y2 = rectangle[i, 3] * 2;
-
-            for (int x = x1; x <= x2; x++)
+            for (int i = 0; i < rectangle.GetLength(0); i++)
             {
-                for (int y = y1; y <= y2; y++)
+                int x1 = rectangle[i, 0] * 2;
+                int y1 = rectangle[i, 1] * 2;
+                int x2 = rectangle[i, 2] * 2;
+                int y2 = rectangle[i, 3] * 2;
+
+                for (int x = x1; x <= x2; x++)
                 {
-                    if (x == x1 || x == x2 || y == y1 || y == y2)
+                    for (int y = y1; y <= y2; y++)
                     {
-                        border[x, y] = true;
+                        bool inside = x > x1 && x < x2 && y > y1 && y < y2;
+
+                        if (step == 0 && !inside)
+                        {
+                            border[x, y] = true;
+                        }
+                        else if (step == 1 && inside)
+                        {
+                            border[x, y] = false;
+                        }
                     }
-                }
-            }
-        }
-
-        for (int i = 0; i < count; i++)
-        {
-            int x1 = rectangle[i, 0] * 2;
-            int y1 = rectangle[i, 1] * 2;
-            int x2 = rectangle[i, 2] * 2;
-            int y2 = rectangle[i, 3] * 2;
-
-            for (int x = x1 + 1; x < x2; x++)
-            {
-                for (int y = y1 + 1; y < y2; y++)
-                {
-                    border[x, y] = false;
                 }
             }
         }
 
         int[] dx = { -1, 1, 0, 0 };
         int[] dy = { 0, 0, -1, 1 };
-        Queue<int[]> queue = new Queue<int[]>();
+        var queue = new Queue<(int x, int y, int d)>();
 
-        queue.Enqueue(new int[] { characterX * 2, characterY * 2, 0 });
+        queue.Enqueue((characterX * 2, characterY * 2, 0));
         border[characterX * 2, characterY * 2] = false;
 
         while (queue.Count > 0)
         {
-            int[] current = queue.Dequeue();
-            int x = current[0];
-            int y = current[1];
-            int distance = current[2];
+            var now = queue.Dequeue();
 
-            if (x == itemX * 2 && y == itemY * 2)
+            if (now.x == itemX * 2 && now.y == itemY * 2)
             {
-                return distance / 2;
+                return now.d / 2;
             }
 
             for (int i = 0; i < 4; i++)
             {
-                int nextX = x + dx[i];
-                int nextY = y + dy[i];
+                int nx = now.x + dx[i];
+                int ny = now.y + dy[i];
 
-                if (nextX < 0 || nextX >= 102 || nextY < 0 || nextY >= 102)
+                if (nx < 0 || nx >= 102 || ny < 0 || ny >= 102)
                 {
                     continue;
                 }
 
-                if (!border[nextX, nextY])
+                if (!border[nx, ny])
                 {
                     continue;
                 }
 
-                border[nextX, nextY] = false;
-                queue.Enqueue(new int[] { nextX, nextY, distance + 1 });
+                border[nx, ny] = false;
+                queue.Enqueue((nx, ny, now.d + 1));
             }
         }
 
@@ -371,7 +348,7 @@ public class Solution
 ### 1. 모든 테두리 표시
 
 ```csharp
-if (x == x1 || x == x2 || y == y1 || y == y2)
+if (step == 0 && !inside)
 {
     border[x, y] = true;
 }
@@ -384,12 +361,9 @@ if (x == x1 || x == x2 || y == y1 || y == y2)
 ### 2. 모든 내부 제거
 
 ```csharp
-for (int x = x1 + 1; x < x2; x++)
+else if (step == 1 && inside)
 {
-    for (int y = y1 + 1; y < y2; y++)
-    {
-        border[x, y] = false;
-    }
+    border[x, y] = false;
 }
 ```
 
@@ -402,7 +376,7 @@ for (int x = x1 + 1; x < x2; x++)
 ### 3. border 배열을 방문 배열처럼 사용
 
 ```csharp
-border[nextX, nextY] = false;
+border[nx, ny] = false;
 ```
 
 이미 방문한 테두리는 다시 방문하지 않아도 됩니다.

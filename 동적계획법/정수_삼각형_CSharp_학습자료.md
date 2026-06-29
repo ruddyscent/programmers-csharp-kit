@@ -201,36 +201,24 @@ public class Solution
 {
     public int solution(int[,] triangle)
     {
-        int height = triangle.GetLength(0);
-        int[,] dp = new int[height, height];
+        int n = triangle.GetLength(0);
+        int[,] dp = new int[n, n];
 
         dp[0, 0] = triangle[0, 0];
 
-        for (int row = 1; row < height; row++)
+        for (int row = 1; row < n; row++)
         {
-            for (int col = 0; col <= row; col++)
-            {
-                if (col == 0)
-                {
-                    dp[row, col] = dp[row - 1, col] + triangle[row, col];
-                }
-                else if (col == row)
-                {
-                    dp[row, col] = dp[row - 1, col - 1] + triangle[row, col];
-                }
-                else
-                {
-                    dp[row, col] = Math.Max(dp[row - 1, col - 1], dp[row - 1, col]) + triangle[row, col];
-                }
-            }
+            dp[row, 0] = dp[row - 1, 0] + triangle[row, 0];
+            dp[row, row] = dp[row - 1, row - 1] + triangle[row, row];
+
+            for (int col = 1; col < row; col++)
+                dp[row, col] = Math.Max(dp[row - 1, col - 1], dp[row - 1, col]) + triangle[row, col];
         }
 
         int answer = 0;
 
-        for (int col = 0; col < height; col++)
-        {
-            answer = Math.Max(answer, dp[height - 1, col]);
-        }
+        for (int col = 0; col < n; col++)
+            answer = Math.Max(answer, dp[n - 1, col]);
 
         return answer;
     }
@@ -244,7 +232,7 @@ public class Solution
 ### 1. 삼각형 높이 구하기
 
 ```csharp
-int height = triangle.GetLength(0);
+int n = triangle.GetLength(0);
 ```
 
 프로그래머스 C#에서 2차원 배열은 `int[,]` 형태입니다.
@@ -256,7 +244,7 @@ int height = triangle.GetLength(0);
 ### 2. DP 배열 만들기
 
 ```csharp
-int[,] dp = new int[height, height];
+int[,] dp = new int[n, n];
 ```
 
 삼각형은 행마다 길이가 다르지만, `int[,]`에서는 정사각형처럼 공간을 만들어도 됩니다.
@@ -282,10 +270,7 @@ dp[0, 0] = triangle[0, 0];
 ### 4. 왼쪽 끝 칸 처리
 
 ```csharp
-if (col == 0)
-{
-    dp[row, col] = dp[row - 1, col] + triangle[row, col];
-}
+dp[row, 0] = dp[row - 1, 0] + triangle[row, 0];
 ```
 
 왼쪽 끝 칸은 바로 위에서만 내려올 수 있습니다.
@@ -295,10 +280,7 @@ if (col == 0)
 ### 5. 오른쪽 끝 칸 처리
 
 ```csharp
-else if (col == row)
-{
-    dp[row, col] = dp[row - 1, col - 1] + triangle[row, col];
-}
+dp[row, row] = dp[row - 1, row - 1] + triangle[row, row];
 ```
 
 오른쪽 끝 칸은 위 왼쪽에서만 내려올 수 있습니다.
@@ -324,10 +306,8 @@ dp[row, col] = Math.Max(dp[row - 1, col - 1], dp[row - 1, col]) + triangle[row, 
 ### 7. 마지막 줄에서 최댓값 찾기
 
 ```csharp
-for (int col = 0; col < height; col++)
-{
-    answer = Math.Max(answer, dp[height - 1, col]);
-}
+for (int col = 0; col < n; col++)
+    answer = Math.Max(answer, dp[n - 1, col]);
 ```
 
 바닥까지 내려가는 경로는 마지막 줄의 어느 칸에서든 끝날 수 있습니다.
@@ -370,21 +350,23 @@ O(n²)
 
 ---
 
-# 🚀 풀이 2. 코드가 짧은 방법 — 원본 배열에 바로 누적하기
+# 🚀 풀이 2. 짧은 코드 버전 — 아래에서 위로 누적하기
 
 ## 💡 아이디어
 
 `triangle` 배열 자체를 DP 배열처럼 사용할 수 있습니다.
 
-즉, 각 칸에:
+이번에는 아래에서 위로 올라오며 각 칸에:
 
 ```text
-그 칸까지 도착하는 최대 합
+그 칸에서 바닥까지 내려갈 때 얻을 수 있는 최대 합
 ```
 
 을 바로 저장합니다.
 
-원본 값을 보존할 필요가 없다면 이 방식이 더 짧고 메모리를 덜 씁니다.
+원본 값을 보존할 필요가 없다면 이 방식이 가장 짧습니다.
+
+끝 칸을 따로 처리하지 않아도 되고, 마지막 줄에서 최댓값을 다시 찾을 필요도 없습니다. ⚡
 
 ---
 
@@ -397,35 +379,13 @@ public class Solution
 {
     public int solution(int[,] triangle)
     {
-        int height = triangle.GetLength(0);
+        int n = triangle.GetLength(0);
 
-        for (int row = 1; row < height; row++)
-        {
+        for (int row = n - 2; row >= 0; row--)
             for (int col = 0; col <= row; col++)
-            {
-                if (col == 0)
-                {
-                    triangle[row, col] += triangle[row - 1, col];
-                }
-                else if (col == row)
-                {
-                    triangle[row, col] += triangle[row - 1, col - 1];
-                }
-                else
-                {
-                    triangle[row, col] += Math.Max(triangle[row - 1, col - 1], triangle[row - 1, col]);
-                }
-            }
-        }
+                triangle[row, col] += Math.Max(triangle[row + 1, col], triangle[row + 1, col + 1]);
 
-        int answer = 0;
-
-        for (int col = 0; col < height; col++)
-        {
-            answer = Math.Max(answer, triangle[height - 1, col]);
-        }
-
-        return answer;
+        return triangle[0, 0];
     }
 }
 ```
@@ -437,12 +397,12 @@ public class Solution
 ### 1. 원본 triangle을 DP처럼 사용
 
 ```csharp
-triangle[row, col] += ...
+triangle[row, col] += Math.Max(triangle[row + 1, col], triangle[row + 1, col + 1]);
 ```
 
-현재 칸 값에 이전 최대 합을 더해서 저장합니다.
+현재 칸 값에 아래쪽 두 경로 중 더 큰 합을 더해서 저장합니다.
 
-예를 들어 현재 칸이 `1`이고 위에서 올 수 있는 최대 합이 `15`라면:
+예를 들어 현재 칸이 `1`이고 아래쪽에서 이어지는 최대 합이 `15`라면:
 
 ```text
 1 + 15 = 16
@@ -457,7 +417,7 @@ triangle[row, col] += ...
 풀이 1에서는:
 
 ```csharp
-int[,] dp = new int[height, height];
+int[,] dp = new int[n, n];
 ```
 
 를 사용했습니다.
@@ -499,49 +459,6 @@ O(1)
 입니다.
 
 단, 입력 배열 자체를 수정합니다.
-
----
-
-# ✨ LINQ를 살짝 쓰는 방법
-
-마지막 줄의 최댓값을 구할 때 LINQ를 사용할 수도 있습니다.
-
-```csharp
-using System;
-using System.Linq;
-
-public class Solution
-{
-    public int solution(int[,] triangle)
-    {
-        int height = triangle.GetLength(0);
-
-        for (int row = 1; row < height; row++)
-        {
-            for (int col = 0; col <= row; col++)
-            {
-                if (col == 0)
-                {
-                    triangle[row, col] += triangle[row - 1, col];
-                }
-                else if (col == row)
-                {
-                    triangle[row, col] += triangle[row - 1, col - 1];
-                }
-                else
-                {
-                    triangle[row, col] += Math.Max(triangle[row - 1, col - 1], triangle[row - 1, col]);
-                }
-            }
-        }
-
-        return Enumerable.Range(0, height)
-            .Max(col => triangle[height - 1, col]);
-    }
-}
-```
-
-다만 이 문제는 DP 갱신이 핵심이라 LINQ를 많이 쓰기보다는 반복문을 쓰는 편이 이해하기 쉽습니다. 😊
 
 ---
 

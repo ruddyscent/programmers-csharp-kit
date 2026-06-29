@@ -116,12 +116,8 @@ public class Solution
 
         for (int row = 0; row < commandCount; row++)
         {
-            int i = commands[row, 0];
-            int j = commands[row, 1];
-            int k = commands[row, 2];
-
-            int startIndex = i - 1;
-            int length = j - i + 1;
+            int i = commands[row, 0], j = commands[row, 1], k = commands[row, 2];
+            int startIndex = i - 1, length = j - i + 1;
 
             int[] sliced = new int[length];
 
@@ -241,7 +237,7 @@ O(q + n)
 
 ---
 
-# 🚀 풀이 2. 코드가 짧은 방법 — LINQ 사용하기
+# 🚀 풀이 2. 짧은 코드 버전 — LINQ 사용하기
 
 ## 💡 아이디어
 
@@ -257,7 +253,6 @@ ElementAt(k - 1) → k번째 값 가져오기
 ## 💻 C# 코드
 
 ```csharp
-using System;
 using System.Linq;
 
 public class Solution

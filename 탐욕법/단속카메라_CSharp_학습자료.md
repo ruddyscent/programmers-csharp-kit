@@ -204,31 +204,20 @@ public class Solution
     public int solution(int[,] routes)
     {
         int carCount = routes.GetLength(0);
-
-        int[][] sortedRoutes = new int[carCount][];
+        var cars = new (int start, int end)[carCount];
 
         for (int i = 0; i < carCount; i++)
+            cars[i] = (routes[i, 0], routes[i, 1]);
+
+        Array.Sort(cars, (a, b) => a.end.CompareTo(b.end));
+
+        int camera = int.MinValue, answer = 0;
+
+        foreach (var car in cars)
         {
-            sortedRoutes[i] = new int[]
+            if (camera < car.start)
             {
-                routes[i, 0],
-                routes[i, 1]
-            };
-        }
-
-        Array.Sort(sortedRoutes, (a, b) => a[1].CompareTo(b[1]));
-
-        int camera = int.MinValue;
-        int answer = 0;
-
-        foreach (int[] route in sortedRoutes)
-        {
-            int start = route[0];
-            int end = route[1];
-
-            if (camera < start)
-            {
-                camera = end;
+                camera = car.end;
                 answer++;
             }
         }
@@ -245,33 +234,29 @@ public class Solution
 ### 1. 2차원 배열을 정렬하기 쉬운 형태로 변환
 
 ```csharp
-int[][] sortedRoutes = new int[carCount][];
+var cars = new (int start, int end)[carCount];
 ```
 
 프로그래머스 C#에서 `routes`는 보통 `int[,]` 형태입니다.
 
-`Array.Sort`로 행 단위 정렬을 쉽게 하기 위해 `int[][]`로 바꿉니다.
+`Array.Sort`로 정렬하기 쉽게 `(start, end)` 튜플 배열로 바꿉니다.
 
 ---
 
 ### 2. 진입 지점과 진출 지점 저장
 
 ```csharp
-sortedRoutes[i] = new int[]
-{
-    routes[i, 0],
-    routes[i, 1]
-};
+cars[i] = (routes[i, 0], routes[i, 1]);
 ```
 
-각 차량의 경로를 `[start, end]` 형태로 저장합니다.
+각 차량의 경로를 `(start, end)` 형태로 저장합니다.
 
 ---
 
 ### 3. 진출 지점 기준 정렬
 
 ```csharp
-Array.Sort(sortedRoutes, (a, b) => a[1].CompareTo(b[1]));
+Array.Sort(cars, (a, b) => a.end.CompareTo(b.end));
 ```
 
 진출 지점이 빠른 차량부터 처리합니다.
@@ -293,7 +278,7 @@ int camera = int.MinValue;
 ### 5. 카메라가 현재 차량을 커버하는지 확인
 
 ```csharp
-if (camera < start)
+if (camera < car.start)
 ```
 
 현재 카메라가 차량의 진입 지점보다 왼쪽에 있다면, 이 차량은 카메라를 만나지 못합니다.
@@ -305,7 +290,7 @@ if (camera < start)
 ### 6. 진출 지점에 카메라 설치
 
 ```csharp
-camera = end;
+camera = car.end;
 answer++;
 ```
 
@@ -339,7 +324,7 @@ O(n log n)
 
 ## 📦 공간 복잡도
 
-정렬을 위해 `int[][]` 배열을 새로 만듭니다.
+정렬을 위해 튜플 배열을 새로 만듭니다.
 
 ```text
 O(n)
@@ -349,7 +334,7 @@ O(n)
 
 ---
 
-# 🚀 풀이 2. 코드가 짧은 방법 — LINQ로 정렬하기
+# 🚀 풀이 2. 짧은 코드 버전 — LINQ로 정렬하기
 
 ## 💡 아이디어
 
@@ -367,18 +352,17 @@ public class Solution
 {
     public int solution(int[,] routes)
     {
-        var sortedRoutes = Enumerable.Range(0, routes.GetLength(0))
-            .Select(i => (Start: routes[i, 0], End: routes[i, 1]))
-            .OrderBy(route => route.End);
+        var cars = Enumerable.Range(0, routes.GetLength(0))
+            .Select(i => (start: routes[i, 0], end: routes[i, 1]))
+            .OrderBy(car => car.end);
 
-        int camera = int.MinValue;
-        int answer = 0;
+        int camera = int.MinValue, answer = 0;
 
-        foreach (var route in sortedRoutes)
+        foreach (var car in cars)
         {
-            if (camera < route.Start)
+            if (camera < car.start)
             {
-                camera = route.End;
+                camera = car.end;
                 answer++;
             }
         }
@@ -413,13 +397,13 @@ Enumerable.Range(0, routes.GetLength(0))
 ### 2. 튜플로 변환
 
 ```csharp
-.Select(i => (Start: routes[i, 0], End: routes[i, 1]))
+.Select(i => (start: routes[i, 0], end: routes[i, 1]))
 ```
 
 각 차량 경로를 이름 있는 튜플로 바꿉니다.
 
 ```text
-(Start, End)
+(start, end)
 ```
 
 ---
@@ -427,7 +411,7 @@ Enumerable.Range(0, routes.GetLength(0))
 ### 3. 진출 지점 기준 정렬
 
 ```csharp
-.OrderBy(route => route.End)
+.OrderBy(car => car.end)
 ```
 
 진출 지점이 빠른 순서대로 정렬합니다.
@@ -437,7 +421,7 @@ Enumerable.Range(0, routes.GetLength(0))
 ### 4. 카메라 설치 판단
 
 ```csharp
-if (camera < route.Start)
+if (camera < car.start)
 ```
 
 현재 카메라가 이 차량의 진입 지점보다 왼쪽에 있으면 새 카메라가 필요합니다.
@@ -500,7 +484,7 @@ O(n)
 
 | 풀이 | 핵심 방법 | 장점 | 시간 복잡도 | 공간 복잡도 |
 |---|---|---|---:|---:|
-| 풀이 1 | 배열 변환 + 진출 지점 정렬 | 흐름이 명확하다 😊 | O(n log n) | O(n) |
+| 풀이 1 | 튜플 배열 + 진출 지점 정렬 | 흐름이 명확하다 😊 | O(n log n) | O(n) |
 | 풀이 2 | LINQ + 튜플 정렬 | 코드가 짧고 읽기 쉽다 🚀 | O(n log n) | O(n) |
 
 ---
@@ -517,7 +501,7 @@ O(n)
 3. 그리디 흐름을 이해하기 쉽습니다.
 ```
 
-LINQ와 튜플에 익숙하다면 **풀이 2번**도 좋습니다.
+코딩 테스트 제출용으로 코드 길이를 우선한다면 **풀이 2번**이 더 좋습니다.
 
 짧고 깔끔하게 작성할 수 있습니다. ⚡
 

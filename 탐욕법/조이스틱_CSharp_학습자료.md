@@ -196,9 +196,7 @@ public class Solution
 {
     public int solution(string name)
     {
-        int n = name.Length;
-        int answer = 0;
-        int move = n - 1;
+        int n = name.Length, answer = 0, move = n - 1;
 
         for (int i = 0; i < n; i++)
         {
@@ -209,9 +207,7 @@ public class Solution
             int next = i + 1;
 
             while (next < n && name[next] == 'A')
-            {
                 next++;
-            }
 
             int goRightThenBack = i * 2 + n - next;
             int goLeftThenBack = i + (n - next) * 2;
@@ -367,7 +363,7 @@ O(1)
 
 ---
 
-# 🚀 풀이 2. 코드가 짧은 방법 — 같은 로직을 간결하게 작성하기
+# 🚀 풀이 2. 짧은 코드 버전 — 같은 로직을 간결하게 작성하기
 
 ## 💡 아이디어
 
@@ -375,7 +371,7 @@ O(1)
 
 다만 변수명을 줄이고 코드를 조금 더 압축합니다.
 
-프로그래머스 제출용으로 바로 사용할 수 있습니다. ✅
+코딩 테스트 제출용으로 바로 사용할 수 있습니다. ✅
 
 ---
 
@@ -388,9 +384,7 @@ public class Solution
 {
     public int solution(string name)
     {
-        int n = name.Length;
-        int answer = 0;
-        int move = n - 1;
+        int n = name.Length, answer = 0, move = n - 1;
 
         for (int i = 0; i < n; i++)
         {
@@ -399,12 +393,9 @@ public class Solution
             int next = i + 1;
 
             while (next < n && name[next] == 'A')
-            {
                 next++;
-            }
 
-            move = Math.Min(move, i * 2 + n - next);
-            move = Math.Min(move, i + 2 * (n - next));
+            move = Math.Min(move, Math.Min(i * 2 + n - next, i + 2 * (n - next)));
         }
 
         return answer + move;
@@ -574,7 +565,7 @@ N: A → N = 13
 3. 커서 이동 최적화 공식을 따라가기 쉽습니다.
 ```
 
-프로그래머스 제출용으로는 **풀이 2번**이 좋습니다.
+코딩 테스트 제출용으로 코드 길이를 우선한다면 **풀이 2번**이 더 좋습니다.
 
 짧지만 핵심 로직은 그대로 유지합니다. ⚡
 

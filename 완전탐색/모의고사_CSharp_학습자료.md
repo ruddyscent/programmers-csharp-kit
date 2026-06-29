@@ -179,41 +179,26 @@ public class Solution
 {
     public int[] solution(int[] answers)
     {
-        int[] pattern1 = { 1, 2, 3, 4, 5 };
-        int[] pattern2 = { 2, 1, 2, 3, 2, 4, 2, 5 };
-        int[] pattern3 = { 3, 3, 1, 1, 2, 2, 4, 4, 5, 5 };
-
+        int[][] patterns =
+        {
+            new int[] { 1, 2, 3, 4, 5 },
+            new int[] { 2, 1, 2, 3, 2, 4, 2, 5 },
+            new int[] { 3, 3, 1, 1, 2, 2, 4, 4, 5, 5 }
+        };
         int[] scores = new int[3];
 
         for (int i = 0; i < answers.Length; i++)
-        {
-            if (answers[i] == pattern1[i % pattern1.Length])
-            {
-                scores[0]++;
-            }
-
-            if (answers[i] == pattern2[i % pattern2.Length])
-            {
-                scores[1]++;
-            }
-
-            if (answers[i] == pattern3[i % pattern3.Length])
-            {
-                scores[2]++;
-            }
-        }
+            for (int p = 0; p < patterns.Length; p++)
+                if (answers[i] == patterns[p][i % patterns[p].Length])
+                    scores[p]++;
 
         int maxScore = Math.Max(scores[0], Math.Max(scores[1], scores[2]));
 
         List<int> result = new List<int>();
 
         for (int i = 0; i < scores.Length; i++)
-        {
             if (scores[i] == maxScore)
-            {
                 result.Add(i + 1);
-            }
-        }
 
         return result.ToArray();
     }
@@ -227,9 +212,7 @@ public class Solution
 ### 1. 패턴 배열 만들기
 
 ```csharp
-int[] pattern1 = { 1, 2, 3, 4, 5 };
-int[] pattern2 = { 2, 1, 2, 3, 2, 4, 2, 5 };
-int[] pattern3 = { 3, 3, 1, 1, 2, 2, 4, 4, 5, 5 };
+int[][] patterns = { ... };
 ```
 
 각 수포자가 반복해서 찍는 답안 패턴입니다.
@@ -255,10 +238,10 @@ scores[2] → 3번 수포자 점수
 ### 3. 정답과 패턴 비교
 
 ```csharp
-answers[i] == pattern1[i % pattern1.Length]
+answers[i] == patterns[p][i % patterns[p].Length]
 ```
 
-`i % pattern1.Length`를 사용하면 패턴이 반복됩니다.
+`i % patterns[p].Length`를 사용하면 패턴이 반복됩니다.
 
 예를 들어 `i = 6`이면:
 
@@ -266,7 +249,7 @@ answers[i] == pattern1[i % pattern1.Length]
 6 % 5 = 1
 ```
 
-따라서 1번 수포자의 6번 인덱스 답은 `pattern1[1]`입니다.
+따라서 해당 수포자의 6번 인덱스 답은 패턴의 1번 위치입니다.
 
 ---
 
@@ -284,9 +267,7 @@ int maxScore = Math.Max(scores[0], Math.Max(scores[1], scores[2]));
 
 ```csharp
 if (scores[i] == maxScore)
-{
     result.Add(i + 1);
-}
 ```
 
 배열 인덱스는 0부터 시작하지만, 수포자 번호는 1부터 시작합니다.
@@ -321,7 +302,7 @@ O(1)
 
 ---
 
-# 🚀 풀이 2. 코드가 짧은 방법 — LINQ로 점수 계산하기
+# 🚀 풀이 2. 짧은 코드 버전 — LINQ로 점수 계산하기
 
 ## 💡 아이디어
 
@@ -341,7 +322,6 @@ O(1)
 ## 💻 C# 코드
 
 ```csharp
-using System;
 using System.Linq;
 
 public class Solution
@@ -356,19 +336,13 @@ public class Solution
         };
 
         int[] scores = patterns
-            .Select(pattern =>
-                answers
-                    .Where((answer, index) => answer == pattern[index % pattern.Length])
-                    .Count()
-            )
+            .Select(p => answers.Where((a, i) => a == p[i % p.Length]).Count())
             .ToArray();
 
         int maxScore = scores.Max();
 
-        return scores
-            .Select((score, index) => new { Score = score, Person = index + 1 })
-            .Where(x => x.Score == maxScore)
-            .Select(x => x.Person)
+        return Enumerable.Range(1, 3)
+            .Where(i => scores[i - 1] == maxScore)
             .ToArray();
     }
 }
@@ -396,9 +370,7 @@ int[][] patterns =
 ### 2. 각 패턴별 점수 계산
 
 ```csharp
-answers
-    .Where((answer, index) => answer == pattern[index % pattern.Length])
-    .Count()
+answers.Where((a, i) => a == p[i % p.Length]).Count()
 ```
 
 정답 배열을 보면서 해당 수포자의 패턴과 일치하는 답만 세어 점수를 구합니다. 🧮
@@ -418,10 +390,8 @@ LINQ의 `Max()`로 가장 높은 점수를 구합니다.
 ### 4. 최고 점수인 사람 번호만 선택
 
 ```csharp
-scores
-    .Select((score, index) => new { Score = score, Person = index + 1 })
-    .Where(x => x.Score == maxScore)
-    .Select(x => x.Person)
+Enumerable.Range(1, 3)
+    .Where(i => scores[i - 1] == maxScore)
     .ToArray();
 ```
 

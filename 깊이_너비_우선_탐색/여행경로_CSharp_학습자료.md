@@ -78,70 +78,51 @@ ICN -> ATL -> ICN -> SFO -> ATL -> SFO
 
 ```csharp
 using System.Collections.Generic;
+using System.Linq;
 
 public class Solution
 {
-    private List<string[]> sortedTickets;
-    private bool[] used;
-    private List<string> path;
-    private string[] answer;
-    private int ticketCount;
+    string[,] tickets;
+    int[] order;
+    bool[] used;
+    List<string> path = new List<string>();
+    string[] answer;
 
     public string[] solution(string[,] tickets)
     {
-        ticketCount = tickets.GetLength(0);
-        sortedTickets = new List<string[]>();
+        this.tickets = tickets;
+        int n = tickets.GetLength(0);
 
-        for (int i = 0; i < ticketCount; i++)
-        {
-            sortedTickets.Add(new string[] { tickets[i, 0], tickets[i, 1] });
-        }
-
-        sortedTickets.Sort((a, b) =>
-        {
-            int compare = string.CompareOrdinal(a[1], b[1]);
-
-            if (compare != 0)
-            {
-                return compare;
-            }
-
-            return string.CompareOrdinal(a[0], b[0]);
-        });
-
-        used = new bool[ticketCount];
-        path = new List<string>();
+        order = Enumerable.Range(0, n)
+            .OrderBy(i => tickets[i, 1])
+            .ThenBy(i => tickets[i, 0])
+            .ToArray();
+        used = new bool[n];
         path.Add("ICN");
-
         Dfs("ICN", 0);
 
         return answer;
     }
 
-    private bool Dfs(string current, int usedCount)
+    bool Dfs(string current, int count)
     {
-        if (usedCount == ticketCount)
+        if (count == used.Length)
         {
             answer = path.ToArray();
             return true;
         }
 
-        for (int i = 0; i < ticketCount; i++)
+        foreach (int i in order)
         {
-            if (used[i])
-            {
-                continue;
-            }
-
-            if (sortedTickets[i][0] != current)
+            if (used[i] || tickets[i, 0] != current)
             {
                 continue;
             }
 
             used[i] = true;
-            path.Add(sortedTickets[i][1]);
+            path.Add(tickets[i, 1]);
 
-            if (Dfs(sortedTickets[i][1], usedCount + 1))
+            if (Dfs(tickets[i, 1], count + 1))
             {
                 return true;
             }
@@ -162,17 +143,10 @@ public class Solution
 ### 1. 항공권 정렬
 
 ```csharp
-sortedTickets.Sort((a, b) =>
-{
-    int compare = string.CompareOrdinal(a[1], b[1]);
-
-    if (compare != 0)
-    {
-        return compare;
-    }
-
-    return string.CompareOrdinal(a[0], b[0]);
-});
+order = Enumerable.Range(0, n)
+    .OrderBy(i => tickets[i, 1])
+    .ThenBy(i => tickets[i, 0])
+    .ToArray();
 ```
 
 도착 공항 이름이 알파벳 순서로 앞서는 항공권부터 시도합니다.
@@ -194,7 +168,7 @@ path.Add("ICN");
 ### 3. 모든 항공권을 사용한 경우
 
 ```csharp
-if (usedCount == ticketCount)
+if (count == used.Length)
 {
     answer = path.ToArray();
     return true;
@@ -211,9 +185,9 @@ if (usedCount == ticketCount)
 
 ```csharp
 used[i] = true;
-path.Add(sortedTickets[i][1]);
+path.Add(tickets[i, 1]);
 
-if (Dfs(sortedTickets[i][1], usedCount + 1))
+if (Dfs(tickets[i, 1], count + 1))
 {
     return true;
 }
@@ -290,10 +264,9 @@ public class Solution
 {
     public string[] solution(string[,] tickets)
     {
-        Dictionary<string, List<string>> graph = new Dictionary<string, List<string>>();
-        int ticketCount = tickets.GetLength(0);
+        var graph = new Dictionary<string, List<string>>();
 
-        for (int i = 0; i < ticketCount; i++)
+        for (int i = 0; i < tickets.GetLength(0); i++)
         {
             string from = tickets[i, 0];
             string to = tickets[i, 1];
@@ -306,14 +279,13 @@ public class Solution
             graph[from].Add(to);
         }
 
-        foreach (string airport in graph.Keys)
+        foreach (var list in graph.Values)
         {
-            graph[airport].Sort((a, b) => string.CompareOrdinal(b, a));
+            list.Sort((a, b) => string.CompareOrdinal(b, a));
         }
 
-        Stack<string> stack = new Stack<string>();
-        List<string> route = new List<string>();
-
+        var stack = new Stack<string>();
+        var route = new List<string>();
         stack.Push("ICN");
 
         while (stack.Count > 0)
@@ -322,10 +294,9 @@ public class Solution
 
             if (graph.ContainsKey(current) && graph[current].Count > 0)
             {
-                List<string> destinations = graph[current];
-                int lastIndex = destinations.Count - 1;
-                string next = destinations[lastIndex];
-                destinations.RemoveAt(lastIndex);
+                var nexts = graph[current];
+                string next = nexts[nexts.Count - 1];
+                nexts.RemoveAt(nexts.Count - 1);
 
                 stack.Push(next);
             }
@@ -360,7 +331,7 @@ Dictionary<string, List<string>> graph = new Dictionary<string, List<string>>();
 ### 2. 도착지를 역순 정렬하기
 
 ```csharp
-graph[airport].Sort((a, b) => string.CompareOrdinal(b, a));
+list.Sort((a, b) => string.CompareOrdinal(b, a));
 ```
 
 도착지를 알파벳 역순으로 정렬합니다.
@@ -374,8 +345,8 @@ graph[airport].Sort((a, b) => string.CompareOrdinal(b, a));
 그러면 리스트의 마지막 값을 꺼낼 때 `"ATL"`을 먼저 사용할 수 있습니다.
 
 ```csharp
-string next = destinations[lastIndex];
-destinations.RemoveAt(lastIndex);
+string next = nexts[nexts.Count - 1];
+nexts.RemoveAt(nexts.Count - 1);
 ```
 
 `List`의 마지막 원소 제거는 빠르기 때문에 효율적입니다. ⚡

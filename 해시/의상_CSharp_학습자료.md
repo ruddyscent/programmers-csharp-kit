@@ -201,7 +201,6 @@ outer    → 1개
 ## 💻 C# 코드
 
 ```csharp
-using System;
 using System.Collections.Generic;
 
 public class Solution
@@ -213,21 +212,13 @@ public class Solution
         for (int i = 0; i < clothes.GetLength(0); i++)
         {
             string type = clothes[i, 1];
-
-            if (!countByType.ContainsKey(type))
-            {
-                countByType[type] = 0;
-            }
-
-            countByType[type]++;
+            countByType[type] = countByType.GetValueOrDefault(type) + 1;
         }
 
         int answer = 1;
 
         foreach (int count in countByType.Values)
-        {
             answer *= count + 1;
-        }
 
         return answer - 1;
     }
@@ -305,30 +296,19 @@ clothes[i, 1] = 의상 종류
 
 ---
 
-### 3. 처음 보는 종류면 0으로 시작
+### 3. 종류별 개수 증가
 
 ```csharp
-if (!countByType.ContainsKey(type))
-{
-    countByType[type] = 0;
-}
+countByType[type] = countByType.GetValueOrDefault(type) + 1;
 ```
 
-Dictionary에 아직 없는 종류라면 새로 등록합니다.
-
----
-
-### 4. 해당 종류 개수 증가
-
-```csharp
-countByType[type]++;
-```
+`GetValueOrDefault()`는 처음 보는 종류라면 `0`을 반환합니다.
 
 같은 종류의 옷이 하나 더 있다는 뜻입니다. 👕
 
 ---
 
-### 5. 조합 수 계산
+### 4. 조합 수 계산
 
 ```csharp
 int answer = 1;
@@ -351,7 +331,7 @@ foreach (int count in countByType.Values)
 
 ---
 
-### 6. 아무것도 안 입는 경우 제거
+### 5. 아무것도 안 입는 경우 제거
 
 ```csharp
 return answer - 1;
@@ -395,7 +375,7 @@ O(n)
 
 ---
 
-# 🚀 풀이 2. 코드가 짧은 방법 — LINQ GroupBy 사용하기
+# 🚀 풀이 2. 짧은 코드 버전 — LINQ GroupBy 사용하기
 
 ## 💡 아이디어
 
@@ -408,7 +388,6 @@ LINQ의 `GroupBy()`를 사용하면 의상 종류별로 쉽게 묶을 수 있습
 ## 💻 C# 코드
 
 ```csharp
-using System;
 using System.Linq;
 
 public class Solution
@@ -549,9 +528,9 @@ O(n)
 3. 해시/딕셔너리 문제의 기본기를 익히기 좋습니다.
 ```
 
-LINQ에 익숙하다면 **풀이 2번**도 좋습니다.
+코딩 테스트 제출용으로 코드 길이를 우선한다면 **풀이 2번 LINQ 방식**이 가장 짧습니다.
 
-다만 `GroupBy`, `Aggregate`가 익숙하지 않다면 처음에는 어렵게 느껴질 수 있습니다. 🌱
+다만 `GroupBy`, `Aggregate`가 익숙하지 않다면 풀이 1번도 충분히 짧고 안정적입니다. 🌱
 
 ---
 

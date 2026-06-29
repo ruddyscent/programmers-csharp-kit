@@ -2,292 +2,192 @@
 
 ## 📌 1. 문제 핵심
 
-게임 보드에는 빈칸이 있고, 테이블에는 퍼즐 조각이 놓여 있습니다.
+게임 보드의 빈칸(`0`)에 테이블의 퍼즐 조각(`1`)을 끼워 넣는 문제입니다.
 
-퍼즐 조각을 회전시켜서 게임 보드의 빈 공간에 딱 맞게 넣어야 합니다.
+퍼즐 조각은 회전할 수 있지만, 뒤집을 수는 없습니다.
 
-중요한 규칙은 다음입니다.
+따라서 해야 할 일은 다음입니다.
 
 ```text
-조각은 회전할 수 있다.
-조각은 뒤집을 수 없다.
-빈 공간과 조각의 모양이 정확히 같아야 한다.
+game_board에서 빈 공간 모양을 찾는다.
+table에서 퍼즐 조각 모양을 찾는다.
+회전했을 때 같은 모양끼리 매칭한다.
 ```
 
-목표는 규칙에 맞게 채울 수 있는 칸 수의 최댓값을 구하는 것입니다. 🎯
+전체 문제 조건과 원문은 프로그래머스 공식 문제 페이지에서 확인하세요.
+
+- [퍼즐 조각 채우기](https://school.programmers.co.kr/learn/courses/30/lessons/84021)
 
 ---
 
-# 🔍 예제 이해하기
+# 🔍 핵심 아이디어
 
-게임 보드에서는 `0`이 빈칸입니다.
+이 문제는 모양 비교가 핵심입니다.
 
-테이블에서는 `1`이 퍼즐 조각입니다.
+같은 모양이라도 보드에서의 위치는 다를 수 있습니다.
 
-따라서 할 일은 크게 두 가지입니다.
+그래서 모양 좌표를 항상 `(0, 0)` 근처로 옮겨서 비교합니다.
 
-```text
-game_board에서 0으로 연결된 빈 공간들을 찾는다.
-table에서 1로 연결된 퍼즐 조각들을 찾는다.
-```
+이 과정을 정규화라고 부릅니다. 🌱
 
-그 다음 빈 공간 하나와 퍼즐 조각 하나를 비교합니다.
-
-회전했을 때 모양이 같다면 그 조각을 넣을 수 있습니다. ✅
-
----
-
-## ⚠️ 주의할 점
-
-이 문제는 단순히 칸 개수만 같다고 맞는 것이 아닙니다.
-
-모양까지 같아야 합니다.
-
-예를 들어 둘 다 4칸짜리라도:
-
-```text
-일자 모양
-ㄴ자 모양
-```
-
-은 서로 맞지 않습니다.
-
-또한 조각은 회전할 수 있지만 뒤집을 수는 없습니다.
-
-그래서 비교할 때는 다음 4가지 회전만 확인합니다.
-
-```text
-0도
-90도
-180도
-270도
-```
-
-좌우 반전이나 상하 반전은 하면 안 됩니다. 🚧
-
----
-
-# 풀이 1. 이해하기 쉬운 방법 — BFS로 모양 찾고 직접 회전 비교
-
-## 💡 아이디어
-
-1. `game_board`에서 빈 공간을 모두 찾습니다.
-2. `table`에서 퍼즐 조각을 모두 찾습니다.
-3. 각 빈 공간마다 아직 쓰지 않은 퍼즐 조각을 하나씩 비교합니다.
-4. 퍼즐 조각을 4방향으로 회전해 보며 빈 공간과 같은지 확인합니다.
-5. 맞는 조각을 찾으면 그 칸 수만큼 정답에 더합니다.
-
-모양을 비교하기 쉽게 각 모양의 좌표를 정규화합니다.
-
-정규화란 모양의 가장 위쪽, 가장 왼쪽 좌표를 `(0, 0)`으로 맞추는 것입니다. 🌱
-
-예를 들어 좌표가 다음과 같다면:
+예를 들어:
 
 ```text
 (2, 3), (2, 4), (3, 3)
 ```
 
-가장 작은 행은 `2`, 가장 작은 열은 `3`입니다.
-
-각 좌표에서 `(2, 3)`을 빼면:
+를 정규화하면:
 
 ```text
 (0, 0), (0, 1), (1, 0)
 ```
 
-이렇게 위치와 상관없이 모양만 비교할 수 있습니다.
+이 됩니다.
+
+또 조각은 회전할 수 있으므로, 0도, 90도, 180도, 270도 모양을 모두 만들어 봅니다.
+
+그 4개 중 문자열로 봤을 때 가장 앞서는 값을 “대표 키”로 정하면, 같은 모양은 같은 키를 갖게 됩니다. 🔑
 
 ---
+
+## ⚠️ 짧게 쓰기 위한 선택
+
+제출용 코드 길이를 줄이기 위해 다음 방식을 씁니다.
+
+1. BFS를 할 때 `visited` 배열을 따로 만들지 않고, 입력 배열 값을 바꿔 방문 처리합니다.
+2. 좌표는 `(int r, int c)` 튜플로 저장합니다.
+3. 모양 비교는 직접 리스트끼리 비교하지 않고, 대표 문자열 키로 처리합니다.
+4. 퍼즐 조각 개수는 `Dictionary<string, int>`에 저장합니다.
+
+이렇게 하면 직접 회전 비교 풀이보다 코드가 훨씬 짧아집니다. ✨
+
+---
+
+# 풀이 1. 이해하기 쉬운 방법 — BFS + 회전 대표 키
+
+## 💡 아이디어
+
+빈 공간과 퍼즐 조각을 각각 BFS로 찾습니다.
+
+찾은 모양은 좌표 리스트로 저장하고, 정규화한 뒤 대표 키로 바꿉니다.
+
+테이블의 퍼즐 조각 키를 `Dictionary`에 먼저 저장해 둔 다음, 게임 보드의 빈 공간 키와 맞는 조각이 있는지 확인합니다.
+
+직접 모양끼리 여러 번 비교하지 않고 문자열 키로 비교해서 코드가 너무 길어지는 것을 막습니다. 👍
 
 ## 💻 C# 코드
 
 ```csharp
 using System.Collections.Generic;
+using System.Linq;
 
 public class Solution
 {
-    private int n;
-    private int[] dr = { -1, 1, 0, 0 };
-    private int[] dc = { 0, 0, -1, 1 };
+    int n;
+    int[] dr = { -1, 1, 0, 0 };
+    int[] dc = { 0, 0, -1, 1 };
 
     public int solution(int[,] game_board, int[,] table)
     {
         n = game_board.GetLength(0);
 
-        List<List<int[]>> blanks = FindShapes(game_board, 0);
-        List<List<int[]>> pieces = FindShapes(table, 1);
-        bool[] used = new bool[pieces.Count];
+        var pieces = new Dictionary<string, int>();
+
+        foreach (var p in Find(table, 1))
+        {
+            string k = Key(p);
+            pieces[k] = pieces.ContainsKey(k) ? pieces[k] + 1 : 1;
+        }
 
         int answer = 0;
 
-        for (int i = 0; i < blanks.Count; i++)
+        foreach (var b in Find(game_board, 0))
         {
-            for (int j = 0; j < pieces.Count; j++)
-            {
-                if (used[j] || blanks[i].Count != pieces[j].Count)
-                {
-                    continue;
-                }
+            string k = Key(b);
 
-                if (CanFit(blanks[i], pieces[j]))
-                {
-                    used[j] = true;
-                    answer += blanks[i].Count;
-                    break;
-                }
+            if (!pieces.ContainsKey(k) || pieces[k] == 0)
+            {
+                continue;
             }
+
+            pieces[k]--;
+            answer += b.Count;
         }
 
         return answer;
     }
 
-    private List<List<int[]>> FindShapes(int[,] board, int target)
+    List<List<(int r, int c)>> Find(int[,] board, int target)
     {
-        bool[,] visited = new bool[n, n];
-        List<List<int[]>> shapes = new List<List<int[]>>();
+        var result = new List<List<(int r, int c)>>();
 
-        for (int row = 0; row < n; row++)
+        for (int r = 0; r < n; r++)
         {
-            for (int col = 0; col < n; col++)
+            for (int c = 0; c < n; c++)
             {
-                if (visited[row, col] || board[row, col] != target)
+                if (board[r, c] != target)
                 {
                     continue;
                 }
 
-                shapes.Add(Bfs(board, visited, row, col, target));
+                var q = new Queue<(int r, int c)>();
+                var shape = new List<(int r, int c)>();
+
+                q.Enqueue((r, c));
+                board[r, c] = 1 - target;
+
+                while (q.Count > 0)
+                {
+                    var now = q.Dequeue();
+                    shape.Add(now);
+
+                    for (int d = 0; d < 4; d++)
+                    {
+                        int nr = now.r + dr[d];
+                        int nc = now.c + dc[d];
+
+                        if (nr < 0 || nr >= n || nc < 0 || nc >= n || board[nr, nc] != target)
+                        {
+                            continue;
+                        }
+
+                        board[nr, nc] = 1 - target;
+                        q.Enqueue((nr, nc));
+                    }
+                }
+
+                result.Add(Norm(shape));
             }
         }
 
-        return shapes;
+        return result;
     }
 
-    private List<int[]> Bfs(int[,] board, bool[,] visited, int startRow, int startCol, int target)
+    string Key(List<(int r, int c)> shape)
     {
-        Queue<int[]> queue = new Queue<int[]>();
-        List<int[]> cells = new List<int[]>();
-
-        queue.Enqueue(new int[] { startRow, startCol });
-        visited[startRow, startCol] = true;
-
-        while (queue.Count > 0)
-        {
-            int[] current = queue.Dequeue();
-            int row = current[0];
-            int col = current[1];
-
-            cells.Add(new int[] { row, col });
-
-            for (int i = 0; i < 4; i++)
-            {
-                int nextRow = row + dr[i];
-                int nextCol = col + dc[i];
-
-                if (nextRow < 0 || nextRow >= n || nextCol < 0 || nextCol >= n)
-                {
-                    continue;
-                }
-
-                if (visited[nextRow, nextCol] || board[nextRow, nextCol] != target)
-                {
-                    continue;
-                }
-
-                visited[nextRow, nextCol] = true;
-                queue.Enqueue(new int[] { nextRow, nextCol });
-            }
-        }
-
-        return Normalize(cells);
-    }
-
-    private bool CanFit(List<int[]> blank, List<int[]> piece)
-    {
-        List<int[]> rotated = piece;
+        var keys = new List<string>();
 
         for (int i = 0; i < 4; i++)
         {
-            rotated = Normalize(rotated);
-
-            if (IsSameShape(blank, rotated))
-            {
-                return true;
-            }
-
-            rotated = Rotate(rotated);
+            shape = Norm(shape);
+            keys.Add(string.Join(";", shape.Select(p => p.r + "," + p.c)));
+            shape = shape.Select(p => (r: p.c, c: -p.r)).ToList();
         }
 
-        return false;
+        keys.Sort();
+        return keys[0];
     }
 
-    private List<int[]> Rotate(List<int[]> shape)
+    List<(int r, int c)> Norm(List<(int r, int c)> shape)
     {
-        List<int[]> rotated = new List<int[]>();
+        int minR = shape.Min(p => p.r);
+        int minC = shape.Min(p => p.c);
 
-        foreach (int[] cell in shape)
-        {
-            int row = cell[0];
-            int col = cell[1];
-            rotated.Add(new int[] { col, -row });
-        }
-
-        return rotated;
-    }
-
-    private List<int[]> Normalize(List<int[]> shape)
-    {
-        int minRow = int.MaxValue;
-        int minCol = int.MaxValue;
-
-        foreach (int[] cell in shape)
-        {
-            if (cell[0] < minRow)
-            {
-                minRow = cell[0];
-            }
-
-            if (cell[1] < minCol)
-            {
-                minCol = cell[1];
-            }
-        }
-
-        List<int[]> normalized = new List<int[]>();
-
-        foreach (int[] cell in shape)
-        {
-            normalized.Add(new int[] { cell[0] - minRow, cell[1] - minCol });
-        }
-
-        normalized.Sort((a, b) =>
-        {
-            if (a[0] == b[0])
-            {
-                return a[1].CompareTo(b[1]);
-            }
-
-            return a[0].CompareTo(b[0]);
-        });
-
-        return normalized;
-    }
-
-    private bool IsSameShape(List<int[]> a, List<int[]> b)
-    {
-        if (a.Count != b.Count)
-        {
-            return false;
-        }
-
-        for (int i = 0; i < a.Count; i++)
-        {
-            if (a[i][0] != b[i][0] || a[i][1] != b[i][1])
-            {
-                return false;
-            }
-        }
-
-        return true;
+        return shape
+            .Select(p => (r: p.r - minR, c: p.c - minC))
+            .OrderBy(p => p.r)
+            .ThenBy(p => p.c)
+            .ToList();
     }
 }
 ```
@@ -299,337 +199,64 @@ public class Solution
 ### 1. 빈 공간과 퍼즐 조각 찾기
 
 ```csharp
-List<List<int[]>> blanks = FindShapes(game_board, 0);
-List<List<int[]>> pieces = FindShapes(table, 1);
+Find(game_board, 0)
+Find(table, 1)
 ```
 
-`game_board`에서는 `0`이 빈 공간입니다.
+`game_board`에서는 `0`으로 연결된 칸을 빈 공간으로 찾습니다.
 
-`table`에서는 `1`이 퍼즐 조각입니다.
+`table`에서는 `1`로 연결된 칸을 퍼즐 조각으로 찾습니다.
 
-같은 값으로 상하좌우 연결된 칸들을 BFS로 하나의 모양으로 묶습니다.
+BFS로 연결된 칸들을 하나의 `shape` 리스트에 담습니다.
 
 ---
 
-### 2. 모양 정규화
+### 2. 방문 처리 줄이기
 
 ```csharp
-return Normalize(cells);
+board[r, c] = 1 - target;
 ```
 
-BFS로 찾은 좌표는 실제 보드 위치를 기준으로 합니다.
+방문한 칸은 반대 값으로 바꿉니다.
 
-하지만 모양 비교에는 위치가 중요하지 않습니다.
+`target`이 `1`이면 `0`으로, `target`이 `0`이면 `1`로 바뀝니다.
 
-그래서 가장 위쪽, 가장 왼쪽으로 당겨서 `(0, 0)` 기준 좌표로 바꿉니다.
+덕분에 별도의 `visited` 배열이 필요 없습니다. ✅
 
 ---
 
-### 3. 회전하기
+### 3. 대표 키 만들기
 
 ```csharp
-rotated.Add(new int[] { col, -row });
+shape = Norm(shape);
+keys.Add(string.Join(";", shape.Select(p => p.r + "," + p.c)));
+shape = shape.Select(p => (r: p.c, c: -p.r)).ToList();
 ```
 
-좌표 `(row, col)`을 90도 회전시키는 방식입니다.
+현재 모양을 정규화한 뒤 문자열 키로 바꿉니다.
 
-회전하면 음수 좌표가 생길 수 있으므로, 비교하기 전에 다시 정규화합니다.
+그 다음 `(r, c)`를 `(c, -r)`로 바꿔 90도 회전합니다.
+
+이 과정을 4번 반복하면 가능한 모든 회전 모양을 확인할 수 있습니다.
 
 ---
 
-### 4. 퍼즐 조각 재사용 막기
+### 4. Dictionary로 매칭하기
 
 ```csharp
-used[j] = true;
+pieces[k] = pieces.ContainsKey(k) ? pieces[k] + 1 : 1;
 ```
 
-한 번 사용한 퍼즐 조각은 다른 빈 공간에 다시 사용할 수 없습니다.
+테이블의 퍼즐 조각을 대표 키별로 세어 둡니다.
 
-그래서 `used` 배열로 사용 여부를 관리합니다.
-
----
-
-## ⏱️ 시간 복잡도
-
-`N`은 보드 한 변의 길이, `B`는 빈 공간 개수, `P`는 퍼즐 조각 개수, `K`는 한 모양의 최대 칸 수입니다.
-
-시간 복잡도: `O(N^2 + B * P * K log K)`
-
-BFS로 전체 보드와 테이블을 훑는 데 `O(N^2)`이 걸립니다.
-
-이후 빈 공간과 퍼즐 조각을 비교할 때, 회전과 정렬이 들어가므로 `B * P * K log K` 정도가 걸립니다.
-
-이 문제에서는 `K`가 최대 6이라 비교 비용은 작습니다.
-
----
-
-## 🧺 공간 복잡도
-
-공간 복잡도: `O(N^2)`
-
-방문 배열과 BFS 큐, 추출한 모양 목록이 보드 크기에 비례하는 공간을 사용할 수 있습니다.
-
----
-
-# 풀이 2. 실전형 방법 — 회전 표준 키 + Dictionary
-
-## 💡 아이디어
-
-이번에는 모양을 문자열 키로 바꿔서 빠르게 매칭합니다.
-
-각 모양에 대해 4가지 회전 모양을 모두 만들고, 그중 알파벳 순서로 가장 앞서는 문자열을 대표 키로 사용합니다.
-
-이 키를 “표준 모양”이라고 생각하면 됩니다.
-
-```text
-같은 모양이라면 회전해도 같은 표준 키가 나온다.
-뒤집은 모양까지 일부러 같은 모양으로 취급하지는 않는다.
-```
-
-먼저 테이블의 퍼즐 조각들을 `Dictionary`에 개수로 저장합니다.
-
-그 다음 게임 보드의 빈 공간을 하나씩 보며 같은 키를 가진 조각이 남아 있는지 확인합니다. 🧠
-
----
-
-## 💻 C# 코드
+빈 공간의 대표 키와 같은 조각이 남아 있으면 사용할 수 있습니다.
 
 ```csharp
-using System.Collections.Generic;
-
-public class Solution
-{
-    private int n;
-    private int[] dr = { -1, 1, 0, 0 };
-    private int[] dc = { 0, 0, -1, 1 };
-
-    public int solution(int[,] game_board, int[,] table)
-    {
-        n = game_board.GetLength(0);
-
-        List<List<int[]>> blanks = FindShapes(game_board, 0);
-        List<List<int[]>> pieces = FindShapes(table, 1);
-
-        Dictionary<string, int> pieceCounts = new Dictionary<string, int>();
-
-        foreach (List<int[]> piece in pieces)
-        {
-            string key = GetCanonicalKey(piece);
-
-            if (!pieceCounts.ContainsKey(key))
-            {
-                pieceCounts[key] = 0;
-            }
-
-            pieceCounts[key]++;
-        }
-
-        int answer = 0;
-
-        foreach (List<int[]> blank in blanks)
-        {
-            string key = GetCanonicalKey(blank);
-
-            if (!pieceCounts.ContainsKey(key) || pieceCounts[key] == 0)
-            {
-                continue;
-            }
-
-            pieceCounts[key]--;
-            answer += blank.Count;
-        }
-
-        return answer;
-    }
-
-    private List<List<int[]>> FindShapes(int[,] board, int target)
-    {
-        bool[,] visited = new bool[n, n];
-        List<List<int[]>> shapes = new List<List<int[]>>();
-
-        for (int row = 0; row < n; row++)
-        {
-            for (int col = 0; col < n; col++)
-            {
-                if (visited[row, col] || board[row, col] != target)
-                {
-                    continue;
-                }
-
-                shapes.Add(Bfs(board, visited, row, col, target));
-            }
-        }
-
-        return shapes;
-    }
-
-    private List<int[]> Bfs(int[,] board, bool[,] visited, int startRow, int startCol, int target)
-    {
-        Queue<int[]> queue = new Queue<int[]>();
-        List<int[]> cells = new List<int[]>();
-
-        queue.Enqueue(new int[] { startRow, startCol });
-        visited[startRow, startCol] = true;
-
-        while (queue.Count > 0)
-        {
-            int[] current = queue.Dequeue();
-            int row = current[0];
-            int col = current[1];
-
-            cells.Add(new int[] { row, col });
-
-            for (int i = 0; i < 4; i++)
-            {
-                int nextRow = row + dr[i];
-                int nextCol = col + dc[i];
-
-                if (nextRow < 0 || nextRow >= n || nextCol < 0 || nextCol >= n)
-                {
-                    continue;
-                }
-
-                if (visited[nextRow, nextCol] || board[nextRow, nextCol] != target)
-                {
-                    continue;
-                }
-
-                visited[nextRow, nextCol] = true;
-                queue.Enqueue(new int[] { nextRow, nextCol });
-            }
-        }
-
-        return Normalize(cells);
-    }
-
-    private string GetCanonicalKey(List<int[]> shape)
-    {
-        List<string> keys = new List<string>();
-        List<int[]> current = shape;
-
-        for (int i = 0; i < 4; i++)
-        {
-            current = Normalize(current);
-            keys.Add(ToKey(current));
-            current = Rotate(current);
-        }
-
-        keys.Sort(string.CompareOrdinal);
-        return keys[0];
-    }
-
-    private string ToKey(List<int[]> shape)
-    {
-        List<string> parts = new List<string>();
-
-        foreach (int[] cell in shape)
-        {
-            parts.Add(cell[0] + "," + cell[1]);
-        }
-
-        return string.Join(";", parts.ToArray());
-    }
-
-    private List<int[]> Rotate(List<int[]> shape)
-    {
-        List<int[]> rotated = new List<int[]>();
-
-        foreach (int[] cell in shape)
-        {
-            rotated.Add(new int[] { cell[1], -cell[0] });
-        }
-
-        return rotated;
-    }
-
-    private List<int[]> Normalize(List<int[]> shape)
-    {
-        int minRow = int.MaxValue;
-        int minCol = int.MaxValue;
-
-        foreach (int[] cell in shape)
-        {
-            if (cell[0] < minRow)
-            {
-                minRow = cell[0];
-            }
-
-            if (cell[1] < minCol)
-            {
-                minCol = cell[1];
-            }
-        }
-
-        List<int[]> normalized = new List<int[]>();
-
-        foreach (int[] cell in shape)
-        {
-            normalized.Add(new int[] { cell[0] - minRow, cell[1] - minCol });
-        }
-
-        normalized.Sort((a, b) =>
-        {
-            if (a[0] == b[0])
-            {
-                return a[1].CompareTo(b[1]);
-            }
-
-            return a[0].CompareTo(b[0]);
-        });
-
-        return normalized;
-    }
-}
+pieces[k]--;
+answer += b.Count;
 ```
 
----
-
-## 🔎 코드 해설
-
-### 1. 퍼즐 조각을 키로 저장
-
-```csharp
-Dictionary<string, int> pieceCounts = new Dictionary<string, int>();
-```
-
-같은 모양의 퍼즐 조각이 여러 개 있을 수 있습니다.
-
-그래서 키마다 개수를 저장합니다.
-
----
-
-### 2. 회전 표준 키 만들기
-
-```csharp
-for (int i = 0; i < 4; i++)
-{
-    current = Normalize(current);
-    keys.Add(ToKey(current));
-    current = Rotate(current);
-}
-```
-
-현재 모양을 0도, 90도, 180도, 270도로 회전하며 문자열 키를 만듭니다.
-
-그중 가장 앞서는 키를 대표 키로 사용합니다.
-
----
-
-### 3. 빈 공간과 조각 매칭
-
-```csharp
-if (!pieceCounts.ContainsKey(key) || pieceCounts[key] == 0)
-{
-    continue;
-}
-
-pieceCounts[key]--;
-answer += blank.Count;
-```
-
-빈 공간의 표준 키와 같은 퍼즐 조각이 남아 있다면 채울 수 있습니다.
-
-사용한 조각의 개수를 1 줄이고, 빈 공간의 칸 수를 정답에 더합니다.
+조각을 하나 사용하고, 채운 칸 수를 정답에 더합니다. 🎉
 
 ---
 
@@ -639,11 +266,11 @@ answer += blank.Count;
 
 시간 복잡도: `O(N^2 + S * K log K)`
 
-BFS로 보드와 테이블을 훑는 데 `O(N^2)`이 걸립니다.
+BFS로 `game_board`와 `table`을 훑는 데 `O(N^2)`이 걸립니다.
 
-각 모양은 4번 회전하며 정규화하므로 `O(K log K)` 정도가 걸립니다.
+각 모양은 4번 회전하며 정규화하고, 정렬에 `O(K log K)`가 걸립니다.
 
-`K`는 최대 6이므로 실제로는 매우 작습니다.
+이 문제에서 `K`는 최대 6이라 실제 부담은 작습니다.
 
 ---
 
@@ -651,22 +278,156 @@ BFS로 보드와 테이블을 훑는 데 `O(N^2)`이 걸립니다.
 
 공간 복잡도: `O(N^2)`
 
-방문 배열, BFS 큐, 모양 목록, `Dictionary`가 필요합니다.
+BFS 큐, 추출한 모양 목록, `Dictionary`가 필요합니다.
 
-전체적으로 보드 크기에 비례하는 공간을 사용합니다.
+입력 배열을 방문 처리에 재사용하므로 별도의 방문 배열 공간은 줄였습니다.
+
+---
+
+# 풀이 2. 짧은 코드 버전
+
+## 💡 아이디어
+
+풀이 1과 같은 방식입니다.
+
+다만 `Sum`, `Enumerable.Range`, `Min` 같은 LINQ를 조금 더 사용해서 매칭과 대표 키 생성을 짧게 씁니다.
+
+코딩테스트에서 코드 길이를 줄이고 싶을 때 참고하기 좋은 버전입니다. ✨
+
+---
+
+## 💻 C# 코드
+
+```csharp
+using System.Collections.Generic;
+using System.Linq;
+
+public class Solution
+{
+    int n;
+    int[] dr = { -1, 1, 0, 0 }, dc = { 0, 0, -1, 1 };
+
+    public int solution(int[,] game_board, int[,] table)
+    {
+        n = game_board.GetLength(0);
+        var pieces = new Dictionary<string, int>();
+
+        foreach (var s in Shapes(table, 1))
+        {
+            string k = Key(s);
+            pieces[k] = pieces.ContainsKey(k) ? pieces[k] + 1 : 1;
+        }
+
+        return Shapes(game_board, 0).Sum(s =>
+        {
+            string k = Key(s);
+
+            if (!pieces.ContainsKey(k) || pieces[k] == 0)
+            {
+                return 0;
+            }
+
+            pieces[k]--;
+            return s.Count;
+        });
+    }
+
+    List<List<(int r, int c)>> Shapes(int[,] a, int v)
+    {
+        var res = new List<List<(int r, int c)>>();
+
+        for (int r = 0; r < n; r++)
+        for (int c = 0; c < n; c++)
+        {
+            if (a[r, c] != v)
+            {
+                continue;
+            }
+
+            var q = new Queue<(int r, int c)>();
+            var s = new List<(int r, int c)>();
+            q.Enqueue((r, c));
+            a[r, c] = 1 - v;
+
+            while (q.Count > 0)
+            {
+                var p = q.Dequeue();
+                s.Add(p);
+
+                for (int d = 0; d < 4; d++)
+                {
+                    int nr = p.r + dr[d], nc = p.c + dc[d];
+
+                    if (nr < 0 || nr >= n || nc < 0 || nc >= n || a[nr, nc] != v)
+                    {
+                        continue;
+                    }
+
+                    a[nr, nc] = 1 - v;
+                    q.Enqueue((nr, nc));
+                }
+            }
+
+            res.Add(Norm(s));
+        }
+
+        return res;
+    }
+
+    string Key(List<(int r, int c)> s)
+    {
+        return Enumerable.Range(0, 4).Select(_ =>
+        {
+            s = Norm(s);
+            string k = string.Join(";", s.Select(p => p.r + "," + p.c));
+            s = s.Select(p => (r: p.c, c: -p.r)).ToList();
+            return k;
+        }).Min();
+    }
+
+    List<(int r, int c)> Norm(List<(int r, int c)> s)
+    {
+        int mr = s.Min(p => p.r), mc = s.Min(p => p.c);
+
+        return s.Select(p => (r: p.r - mr, c: p.c - mc))
+            .OrderBy(p => p.r)
+            .ThenBy(p => p.c)
+            .ToList();
+    }
+}
+```
+
+---
+
+## ⏱️ 시간 복잡도
+
+`N`은 보드 한 변의 길이, `S`는 추출된 모양의 개수, `K`는 한 모양의 최대 칸 수입니다.
+
+시간 복잡도: `O(N^2 + S * K log K)`
+
+풀이 1과 같은 작업을 더 짧게 쓴 코드이므로 복잡도는 같습니다.
+
+---
+
+## 🧺 공간 복잡도
+
+공간 복잡도: `O(N^2)`
+
+BFS 큐, 모양 목록, `Dictionary`가 필요합니다.
 
 ---
 
 ## ✅ 정리
 
-이 문제는 다음 세 가지를 정확히 처리하면 됩니다.
+이 문제를 짧게 풀려면 “모양을 직접 비교”하기보다 “대표 키로 바꿔 비교”하는 편이 좋습니다.
+
+핵심은 다음입니다.
 
 ```text
-BFS로 빈 공간과 퍼즐 조각을 찾는다.
-모양 좌표를 정규화해서 위치 차이를 없앤다.
-4가지 회전을 비교하되, 뒤집기는 하지 않는다.
+BFS로 연결된 모양을 찾는다.
+모양을 정규화한다.
+4번 회전한 키 중 가장 앞선 것을 대표 키로 쓴다.
+Dictionary로 조각 개수를 세고 빈칸과 매칭한다.
 ```
 
-처음에는 직접 회전 비교 풀이가 이해하기 좋습니다.
-
-실전에서는 회전 표준 키를 만들어 `Dictionary`로 매칭하면 더 깔끔하게 풀 수 있습니다. 🚀
+코드는 짧아졌지만, 좌표 정규화와 회전 원리만 이해하면 충분히 따라갈 수 있습니다. 🚀

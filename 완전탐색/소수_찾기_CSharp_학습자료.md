@@ -228,7 +228,7 @@ numbers = "011"
 ## 💡 아이디어
 
 1. 숫자 조각을 하나씩 선택합니다.
-2. 선택한 숫자를 현재 문자열 뒤에 붙입니다.
+2. 선택한 숫자를 현재 숫자 뒤에 붙입니다.
 3. 만들어진 숫자를 `HashSet<int>`에 넣습니다.
 4. 아직 사용하지 않은 숫자를 계속 붙여 봅니다.
 5. 모든 숫자를 만든 뒤 소수 개수를 셉니다.
@@ -238,7 +238,6 @@ numbers = "011"
 ## 💻 C# 코드
 
 ```csharp
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -250,37 +249,22 @@ public class Solution
     {
         bool[] used = new bool[numbers.Length];
 
-        MakeNumbers(numbers, "", used);
+        MakeNumbers(numbers, 0, used);
 
-        int answer = 0;
-
-        foreach (int number in numbersSet)
-        {
-            if (IsPrime(number))
-            {
-                answer++;
-            }
-        }
-
-        return answer;
+        return numbersSet.Count(IsPrime);
     }
 
-    private void MakeNumbers(string numbers, string current, bool[] used)
+    private void MakeNumbers(string numbers, int current, bool[] used)
     {
-        if (current.Length > 0)
-        {
-            numbersSet.Add(int.Parse(current));
-        }
+        numbersSet.Add(current);
 
         for (int i = 0; i < numbers.Length; i++)
         {
             if (used[i])
-            {
                 continue;
-            }
 
             used[i] = true;
-            MakeNumbers(numbers, current + numbers[i], used);
+            MakeNumbers(numbers, current * 10 + numbers[i] - '0', used);
             used[i] = false;
         }
     }
@@ -288,17 +272,11 @@ public class Solution
     private bool IsPrime(int number)
     {
         if (number < 2)
-        {
             return false;
-        }
 
         for (int i = 2; i * i <= number; i++)
-        {
             if (number % i == 0)
-            {
                 return false;
-            }
-        }
 
         return true;
     }
@@ -347,27 +325,20 @@ bool[] used = new bool[numbers.Length];
 ### 3. 현재까지 만든 숫자 저장
 
 ```csharp
-if (current.Length > 0)
-{
-    numbersSet.Add(int.Parse(current));
-}
+numbersSet.Add(current);
 ```
 
-`current`가 비어 있지 않으면 숫자로 바꿔서 저장합니다.
+현재까지 만든 숫자를 저장합니다.
 
 예를 들어:
 
 ```text
-current = "01"
-```
-
-이면:
-
-```text
-int.Parse("01") = 1
+current = 1
 ```
 
 입니다.
+
+처음 호출의 `0`도 저장되지만, `0`은 소수가 아니므로 정답에는 포함되지 않습니다.
 
 ---
 
@@ -377,10 +348,10 @@ int.Parse("01") = 1
 for (int i = 0; i < numbers.Length; i++)
 ```
 
-아직 사용하지 않은 종이 조각을 하나 골라 현재 문자열 뒤에 붙입니다.
+아직 사용하지 않은 종이 조각을 하나 골라 현재 숫자 뒤에 붙입니다.
 
 ```csharp
-MakeNumbers(numbers, current + numbers[i], used);
+MakeNumbers(numbers, current * 10 + numbers[i] - '0', used);
 ```
 
 ---
@@ -389,7 +360,7 @@ MakeNumbers(numbers, current + numbers[i], used);
 
 ```csharp
 used[i] = true;
-MakeNumbers(numbers, current + numbers[i], used);
+MakeNumbers(numbers, current * 10 + numbers[i] - '0', used);
 used[i] = false;
 ```
 
@@ -451,20 +422,25 @@ O(n)
 
 ---
 
-# 🚀 풀이 2. 코드가 짧은 방법 — 로컬 함수와 LINQ Count 사용하기
+# 🚀 풀이 2. 짧은 코드 버전 — 숫자를 바로 만들기
 
 ## 💡 아이디어
 
 풀이 1과 같은 DFS 방식입니다.
 
-다만 C#의 로컬 함수를 사용해서 코드를 하나의 `solution` 안에 모으고, 마지막 소수 개수는 LINQ `Count()`로 계산합니다.
+다만 문자열을 이어 붙이지 않고, 현재 숫자에 다음 숫자를 바로 붙입니다.
+
+```text
+next = current * 10 + digit
+```
+
+마지막 소수 개수는 LINQ `Count()`로 계산합니다.
 
 ---
 
 ## 💻 C# 코드
 
 ```csharp
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -475,22 +451,17 @@ public class Solution
         var set = new HashSet<int>();
         var used = new bool[numbers.Length];
 
-        void Dfs(string current)
+        void Dfs(int current)
         {
-            if (current.Length > 0)
-            {
-                set.Add(int.Parse(current));
-            }
+            set.Add(current);
 
             for (int i = 0; i < numbers.Length; i++)
             {
                 if (used[i])
-                {
                     continue;
-                }
 
                 used[i] = true;
-                Dfs(current + numbers[i]);
+                Dfs(current * 10 + numbers[i] - '0');
                 used[i] = false;
             }
         }
@@ -498,22 +469,16 @@ public class Solution
         bool IsPrime(int number)
         {
             if (number < 2)
-            {
                 return false;
-            }
 
             for (int i = 2; i * i <= number; i++)
-            {
                 if (number % i == 0)
-                {
                     return false;
-                }
-            }
 
             return true;
         }
 
-        Dfs("");
+        Dfs(0);
 
         return set.Count(IsPrime);
     }
@@ -527,12 +492,14 @@ public class Solution
 ### 1. 로컬 함수 `Dfs`
 
 ```csharp
-void Dfs(string current)
+void Dfs(int current)
 ```
 
 `solution` 함수 안에 DFS 함수를 정의했습니다.
 
 이렇게 하면 `set`, `used`, `numbers`를 별도 필드로 만들지 않고 바로 사용할 수 있습니다. 😊
+
+문자열 대신 숫자를 직접 들고 다녀서 `int.Parse()`도 필요 없습니다.
 
 ---
 

@@ -91,9 +91,9 @@ DFS로 연결된 컴퓨터들을 모두 방문 처리한다.
 ```csharp
 public class Solution
 {
-    private bool[] visited;
-    private int[,] computers;
-    private int n;
+    bool[] visited;
+    int[,] computers;
+    int n;
 
     public int solution(int n, int[,] computers)
     {
@@ -117,7 +117,7 @@ public class Solution
         return answer;
     }
 
-    private void Dfs(int current)
+    void Dfs(int current)
     {
         visited[current] = true;
 
@@ -241,8 +241,7 @@ public class Solution
             }
 
             answer++;
-
-            Queue<int> queue = new Queue<int>();
+            var queue = new Queue<int>();
             queue.Enqueue(i);
             visited[i] = true;
 
